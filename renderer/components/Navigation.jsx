@@ -1,4 +1,12 @@
 function Navigation({ currentView, onNavigate, systemStats }) {
+  const [appVersion, setAppVersion] = React.useState('1.0.0');
+
+  React.useEffect(() => {
+    if (window.electronAPI && window.electronAPI.getAppVersion) {
+      setAppVersion(window.electronAPI.getAppVersion());
+    }
+  }, []);
+
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'gameboost', label: 'Game Boost' },
@@ -83,8 +91,8 @@ function Navigation({ currentView, onNavigate, systemStats }) {
       )}
 
       <div className="nav-footer">
-              <div className="app-version">v1.0.9</div>
-        <p className="copyright">© 2025 tooltech.pl</p>
+        <div className="app-version">v{appVersion}</div>
+        <p className="copyright">© 2025 optitool.pl</p>
       </div>
     </nav>
   );

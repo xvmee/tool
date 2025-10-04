@@ -3,11 +3,17 @@ function Settings({ settings, onSaveSettings, addNotification }) {
   const [startupApps, setStartupApps] = useState([]);
   const [hasChanges, setHasChanges] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState(null);
+  const [appVersion, setAppVersion] = useState('1.0.0');
 
   useEffect(() => {
     setLocalSettings(settings);
     loadStartupApps();
     checkForPendingUpdate();
+    
+    // Pobierz wersję aplikacji
+    if (window.electronAPI && window.electronAPI.getAppVersion) {
+      setAppVersion(window.electronAPI.getAppVersion());
+    }
   }, [settings]);
 
   const checkForPendingUpdate = () => {
@@ -81,7 +87,7 @@ function Settings({ settings, onSaveSettings, addNotification }) {
   };
 
   const openWebsite = () => {
-    window.electronAPI.openExternal('https://tooltech.pl');
+    window.electronAPI.openExternal('https://optitool.pl');
   };
 
   const handleDownloadUpdate = () => {
@@ -265,7 +271,7 @@ function Settings({ settings, onSaveSettings, addNotification }) {
           <h2>ℹ️ Informacje</h2>
           <div className="info-box">
             <div className="app-info">
-              <h3>Tool v1.0.7</h3>
+              <h3>Tool v{appVersion}</h3>
               <p>Advanced System Optimization Tool</p>
               <p className="app-website" onClick={openWebsite}>🌐 optitool.pl</p>
             </div>
@@ -279,7 +285,7 @@ function Settings({ settings, onSaveSettings, addNotification }) {
                 className="social-link discord"
                 onClick={(e) => {
                   e.preventDefault();
-                  window.api.send('open-external-link', 'https://discord.gg/QYnVGXtf');
+                  window.electronAPI.openExternal('https://discord.gg/QYnVGXtf');
                 }}
               >
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
@@ -292,7 +298,7 @@ function Settings({ settings, onSaveSettings, addNotification }) {
                 className="social-link github"
                 onClick={(e) => {
                   e.preventDefault();
-                  window.api.send('open-external-link', 'https://github.com/xvmee/tool');
+                  window.electronAPI.openExternal('https://github.com/xvmee/tool');
                 }}
               >
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">

@@ -1,9 +1,9 @@
 {
   "name": "tool",
-  "version": "1.0.9",
-  "description": "Advanced System Optimization & Gaming Boost - tooltech.pl",
+  "version": "1.0.0",
+  "description": "Advanced System Optimization & Gaming Boost - optitool.pl",
   "main": "main.js",
-  "author": "tooltech.pl <contact@tooltech.pl>",
+  "author": "optitool.pl <contact@optitool.pl>",
   "homepage": "https://github.com/xvmee/tool#readme",
   "repository": {
     "type": "git",
@@ -22,9 +22,9 @@
     "dev": "electron ."
   },
   "build": {
-    "appId": "com.tooltech.tool",
+    "appId": "com.optitool.tool",
     "productName": "Tool",
-    "copyright": "Copyright © 2025 tooltech.pl",
+    "copyright": "Copyright © 2025 optitool.pl",
     "directories": {
       "output": "dist",
       "buildResources": "assets"
