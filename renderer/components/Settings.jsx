@@ -265,12 +265,12 @@ function Settings({ settings, onSaveSettings, addNotification }) {
           <h2>ℹ️ Informacje</h2>
           <div className="info-box">
             <div className="app-info">
-              <h3>Tool v1.0.0</h3>
+              <h3>Tool v1.0.7</h3>
               <p>Advanced System Optimization Tool</p>
-              <p className="app-website" onClick={openWebsite}>🌐 tooltech.pl</p>
+              <p className="app-website" onClick={openWebsite}>🌐 optitool.pl</p>
             </div>
             <div className="app-credits">
-              <p>© 2025 tooltech.pl. Wszelkie prawa zastrzeżone.</p>
+              <p>© 2025 optitool.pl. Wszelkie prawa zastrzeżone.</p>
               <p>Made with ❤️ in Poland</p>
             </div>
             <div className="social-links">

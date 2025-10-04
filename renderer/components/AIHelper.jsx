@@ -2,7 +2,7 @@ function AIHelper() {
   const [messages, setMessages] = React.useState([
     {
       role: 'assistant',
-      content: 'Cześć! Jestem AI Helper. Mogę pomóc Ci z problemami związanymi z komputerem, systemem Windows, optymalizacją wydajności i rozwiązywaniem błędów. Jak mogę Ci dzisiaj pomóc? 🤖'
+      content: 'Witaj. Jestem asystentem technicznym Tool. Mogę pomóc w kwestiach związanych z systemem Windows, optymalizacją wydajności i rozwiązywaniem problemów. W czym mogę pomóc?'
     }
   ]);
   const [input, setInput] = React.useState('');
@@ -131,11 +131,11 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
   };
 
   const quickQuestions = [
-    "Jak zoptymalizować wydajność Windows?",
-    "Dlaczego mój komputer jest wolny?",
+    "Jak zoptymalizować wydajność systemu?",
+    "Dlaczego komputer działa wolno?",
     "Jak zwiększyć FPS w grach?",
-    "Co zużywa najwięcej RAM?",
-    "Jak wyczyścić dysk z niepotrzebnych plików?"
+    "Co zużywa najwięcej pamięci RAM?",
+    "Jak wyczyścić dysk systemowy?"
   ];
 
   // Format markdown text
@@ -161,11 +161,11 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
     <div className="ai-helper">
       <header className="ai-helper-header">
         <div className="ai-header-content">
-          <h1 className="gradient-text">ToolAI</h1>
-          <p className="subtitle">Profesjonalny asystent techniczny, zapytaj mnie o temat komputerowy!</p>
+          <h1>ToolAI</h1>
+          <p className="subtitle">Techniczny asystent do spraw komputerowych i systemowych</p>
         </div>
         <button className="btn-clear-chat" onClick={clearChat} title="Wyczyść czat">
-          🗑️ Wyczyść
+          Wyczyść historię
         </button>
       </header>
 
@@ -174,7 +174,11 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
           {messages.map((msg, idx) => (
             <div key={idx} className={`ai-message ${msg.role}`}>
               <div className="message-avatar">
-                {msg.role === 'assistant' ? '🤖' : '👤'}
+                {msg.role === 'assistant' ? (
+                  <img src="../assets/ONLY T.png" alt="Tool AI" />
+                ) : (
+                  '👤'
+                )}
               </div>
               <div className="message-content">
                 <div 
@@ -190,7 +194,9 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
           
           {isLoading && (
             <div className="ai-message assistant">
-              <div className="message-avatar">🤖</div>
+              <div className="message-avatar">
+                <img src="../assets/ONLY T.png" alt="Tool AI" />
+              </div>
               <div className="message-content">
                 <div className="typing-indicator">
                   <span></span>
@@ -206,7 +212,7 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
 
         {messages.length === 1 && (
           <div className="quick-questions">
-            <p className="quick-title">Szybkie Pytania:</p>
+            <p className="quick-title">Przykładowe pytania</p>
             <div className="quick-buttons">
               {quickQuestions.map((q, idx) => (
                 <button
@@ -225,14 +231,14 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
       <div className="ai-input-container">
         {error && (
           <div className="ai-error">
-            ⚠️ {error}
+            {error}
           </div>
         )}
         
         <div className="ai-input-wrapper">
           <textarea
             className="ai-input"
-            placeholder="Zadaj pytanie o komputer, system lub wydajność..."
+            placeholder="Zadaj pytanie..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
@@ -244,13 +250,13 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
             onClick={sendMessage}
             disabled={!input.trim() || isLoading}
           >
-            {isLoading ? '⏳' : '🚀'}
+            ↑
           </button>
         </div>
         
         <div className="ai-footer-info">
           <span className="ai-status">
-            {isLoading ? '⚡ Myślę...' : '✅ Gotowy do pomocy'}
+            {isLoading ? 'Przetwarzanie...' : 'Gotowy'}
           </span>
           <span className="ai-powered">Powered by ToolAI</span>
         </div>
