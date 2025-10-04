@@ -1,0 +1,94 @@
+{
+  "name": "tool",
+  "version": "2.1.0",
+  "description": "Advanced System Optimization & Gaming Boost - tooltech.pl",
+  "main": "main.js",
+  "author": "tooltech.pl <contact@tooltech.pl>",
+  "homepage": "https://github.com/tooltech/Tool#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tooltech/Tool.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tooltech/Tool/issues"
+  },
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:portable": "electron-builder --win portable",
+    "publish": "electron-builder --win --publish always",
+    "dev": "electron ."
+  },
+  "build": {
+    "appId": "com.tooltech.tool",
+    "productName": "Tool",
+    "copyright": "Copyright © 2025 tooltech.pl",
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "assets/**/*",
+      "package.json",
+      "!node_modules/**/*",
+      "!dist/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "requestedExecutionLevel": "requireAdministrator"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Tool",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": true
+    },
+    "portable": {
+      "artifactName": "${productName}-Portable-${version}.${ext}"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "tooltech",
+      "repo": "Tool",
+      "releaseType": "release"
+    }
+  },
+  "keywords": [
+    "electron",
+    "system",
+    "optimization",
+    "tool",
+    "gaming",
+    "performance",
+    "windows"
+  ],
+  "devDependencies": {
+    "@babel/cli": "^7.23.0",
+    "@babel/core": "^7.23.0",
+    "@babel/preset-react": "^7.22.15",
+    "electron": "^27.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "dependencies": {
+    "electron-updater": "^6.6.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

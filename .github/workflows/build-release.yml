@@ -1,0 +1,87 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Triggeruje się na tagach typu v2.1.0, v2.2.0, etc.
+  workflow_dispatch:  # Możliwość ręcznego uruchomienia
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build application
+        run: npm run build:win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Get version from tag
+        id: get_version
+        run: |
+          $VERSION = $env:GITHUB_REF -replace 'refs/tags/v', ''
+          echo "VERSION=$VERSION" >> $env:GITHUB_OUTPUT
+        shell: powershell
+      
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Tool v${{ steps.get_version.outputs.VERSION }}
+          body: |
+            ## 🎉 Tool v${{ steps.get_version.outputs.VERSION }}
+            
+            ### 📥 Pobierz
+            - **Tool-Setup-${{ steps.get_version.outputs.VERSION }}.exe** - Instalator Windows (64-bit)
+            
+            ### 📦 Instalacja
+            1. Pobierz `Tool-Setup-${{ steps.get_version.outputs.VERSION }}.exe`
+            2. Uruchom jako Administrator
+            3. Postępuj zgodnie z kreatorem instalacji
+            
+            ### ✨ Co nowego
+            - Zobacz pełny changelog poniżej
+            
+            ### ⚙️ Wymagania
+            - Windows 10/11 (64-bit)
+            - Uprawnienia Administratora
+            
+            ---
+            **Automatycznie wygenerowane przez GitHub Actions**
+          draft: false
+          prerelease: false
+      
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/Tool-Setup-${{ steps.get_version.outputs.VERSION }}.exe
+          asset_name: Tool-Setup-${{ steps.get_version.outputs.VERSION }}.exe
+          asset_content_type: application/octet-stream
+      
+      - name: Upload latest.yml for auto-updater
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/latest.yml
+          asset_name: latest.yml
+          asset_content_type: text/yaml
