@@ -15,10 +15,10 @@
 
 ---
 ## Funkcje
-Skanowanie komputera oraz usuwanie niepotrzebnych plików
-Optymalizowanie Podzespołów
-Game Boost
-i wiele więcej!
+- **Skanowanie komputera oraz usuwanie niepotrzebnych plików**
+- **Optymalizowanie Podzespołów**
+- **Game Boost**
+### **i wiele więcej!**
 ---
 
 **Made with ❤️ by tooltech.pl**
