@@ -11,7 +11,20 @@ let systemStatsInterval;
 let autoUpdater = null;
 if (app.isPackaged) {
   try {
-    autoUpdater = require('electron-updater').autoUpdater;
+    const { autoUpdater: updater } = require('electron-updater');
+    autoUpdater = updater;
+    
+    // Clear update cache directory on startup
+    const updateCachePath = path.join(app.getPath('userData'), 'pending-update');
+    if (fs.existsSync(updateCachePath)) {
+      try {
+        fs.rmSync(updateCachePath, { recursive: true, force: true });
+        console.log('Cleared update cache');
+      } catch (err) {
+        console.log('Could not clear update cache:', err.message);
+      }
+    }
+    
     autoUpdater.autoDownload = false;
     autoUpdater.autoInstallOnAppQuit = true;
     autoUpdater.allowPrerelease = false;
@@ -64,6 +77,9 @@ const createWindow = () => {
   
   if (autoUpdater) {
     setTimeout(() => {
+      console.log('=== STARTUP UPDATE CHECK ===');
+      console.log('App version:', app.getVersion());
+      console.log('Checking GitHub for updates...');
       checkForUpdates();
     }, 3000);
   }
@@ -929,7 +945,15 @@ const checkForUpdates = () => {
   }
   
   console.log('Checking for updates...');
+  console.log('Current app version:', app.getVersion());
+  
   try {
+    // Force fresh check by resetting internal state
+    autoUpdater.setFeedURL({
+      provider: 'github',
+      owner: 'xvmee',
+      repo: 'tool'
+    });
     autoUpdater.checkForUpdates();
   } catch (err) {
     console.error('Error checking for updates:', err);
@@ -945,7 +969,13 @@ if (autoUpdater) {
   });
 
   autoUpdater.on('update-available', (info) => {
-    console.log('Update available:', info.version);
+    console.log('=== UPDATE AVAILABLE ===');
+    console.log('New version:', info.version);
+    console.log('Current version:', app.getVersion());
+    console.log('Release date:', info.releaseDate);
+    console.log('Release notes:', info.releaseNotes);
+    console.log('========================');
+    
     if (mainWindow) {
       mainWindow.webContents.send('update-available', {
         version: info.version,
@@ -956,13 +986,13 @@ if (autoUpdater) {
   });
 
   autoUpdater.on('update-not-available', (info) => {
-    console.log('Update not available. Current version:', info.version);
+    console.log('=== NO UPDATE AVAILABLE ===');
+    console.log('Current version:', info.version);
+    console.log('App version:', app.getVersion());
+    console.log('===========================');
+    
     if (mainWindow) {
       mainWindow.webContents.send('update-status', { status: 'not-available', version: info.version });
-    }
-    // Clear any cached update data to force fresh check next time
-    if (autoUpdater.currentVersion) {
-      console.log('Clearing update cache for next check');
     }
   });
 
