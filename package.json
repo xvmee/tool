@@ -1,6 +1,6 @@
 {
   "name": "tool",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Advanced System Optimization & Gaming Boost - tooltech.pl",
   "main": "main.js",
   "author": "tooltech.pl <contact@tooltech.pl>",
@@ -50,6 +50,7 @@
           ]
         }
       ],
+      "icon": "assets/icon.png",
       "artifactName": "${productName}-Setup-${version}.${ext}",
       "requestedExecutionLevel": "requireAdministrator"
     },

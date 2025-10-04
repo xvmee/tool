@@ -16,7 +16,6 @@ if (app.isPackaged) {
     autoUpdater.autoInstallOnAppQuit = true;
     autoUpdater.allowPrerelease = false;
     autoUpdater.allowDowngrade = false;
-    // Force check for updates on every launch by clearing cache
     autoUpdater.forceDevUpdateConfig = false;
     console.log('Auto-updater enabled');
   } catch (err) {
@@ -39,7 +38,7 @@ const createWindow = () => {
     },
     frame: false,
     show: false,
-    icon: path.join(__dirname, 'assets', 'Tool.png'),
+    icon: path.join(__dirname, 'assets', 'icon.png'),
     titleBarStyle: 'hidden',
     transparent: false
   });

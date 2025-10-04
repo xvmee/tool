@@ -175,7 +175,7 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
             <div key={idx} className={`ai-message ${msg.role}`}>
               <div className="message-avatar">
                 {msg.role === 'assistant' ? (
-                  <img src="../assets/ONLY T.png" alt="Tool AI" />
+                  <img src="../assets/icon.png" alt="Tool AI" />
                 ) : (
                   '👤'
                 )}
@@ -195,7 +195,7 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
           {isLoading && (
             <div className="ai-message assistant">
               <div className="message-avatar">
-                <img src="../assets/ONLY T.png" alt="Tool AI" />
+                <img src="../assets/icon.png" alt="Tool AI" />
               </div>
               <div className="message-content">
                 <div className="typing-indicator">
