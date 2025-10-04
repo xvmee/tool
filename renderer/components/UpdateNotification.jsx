@@ -80,10 +80,20 @@ function UpdateNotification() {
 
   const handleInstall = () => {
     window.api.send('install-update');
+    // Clear pending update from localStorage
+    localStorage.removeItem('pendingUpdate');
   };
 
   const handleClose = () => {
     setVisible(false);
+    // Save update info to localStorage so Settings can show it
+    if (updateState.available && !updateState.downloaded) {
+      localStorage.setItem('pendingUpdate', JSON.stringify({
+        version: updateState.version,
+        releaseNotes: updateState.releaseNotes,
+        timestamp: Date.now()
+      }));
+    }
   };
 
   const formatBytes = (bytes) => {

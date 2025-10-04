@@ -2,11 +2,53 @@ function Settings({ settings, onSaveSettings, addNotification }) {
   const [localSettings, setLocalSettings] = useState(settings);
   const [startupApps, setStartupApps] = useState([]);
   const [hasChanges, setHasChanges] = useState(false);
+  const [updateAvailable, setUpdateAvailable] = useState(null);
 
   useEffect(() => {
     setLocalSettings(settings);
     loadStartupApps();
+    checkForPendingUpdate();
   }, [settings]);
+
+  const checkForPendingUpdate = () => {
+    const pendingUpdate = localStorage.getItem('pendingUpdate');
+    if (pendingUpdate) {
+      try {
+        const updateData = JSON.parse(pendingUpdate);
+        // Check if update info is not older than 7 days
+        const age = Date.now() - updateData.timestamp;
+        if (age < 7 * 24 * 60 * 60 * 1000) {
+          setUpdateAvailable({
+            version: updateData.version,
+            releaseNotes: updateData.releaseNotes
+          });
+        } else {
+          localStorage.removeItem('pendingUpdate');
+        }
+      } catch (error) {
+        console.error('Error parsing pending update:', error);
+        localStorage.removeItem('pendingUpdate');
+      }
+    }
+  };
+
+  const checkForUpdates = () => {
+    window.api.on('update-available', (data) => {
+      setUpdateAvailable({
+        version: data.version,
+        releaseNotes: data.releaseNotes
+      });
+    });
+
+    window.api.on('update-not-available', () => {
+      setUpdateAvailable(null);
+    });
+
+    return () => {
+      window.api.removeAllListeners('update-available');
+      window.api.removeAllListeners('update-not-available');
+    };
+  };
 
   const loadStartupApps = async () => {
     try {
@@ -42,12 +84,47 @@ function Settings({ settings, onSaveSettings, addNotification }) {
     window.electronAPI.openExternal('https://tooltech.pl');
   };
 
+  const handleDownloadUpdate = () => {
+    window.api.send('download-update');
+    addNotification('Pobieranie aktualizacji...', 'info');
+    // Clear from localStorage as user is downloading
+    localStorage.removeItem('pendingUpdate');
+  };
+
+  const handleDismissUpdate = () => {
+    setUpdateAvailable(null);
+    // Keep in localStorage for later reminder
+  };
+
   return (
     <div className="settings">
       <header className="settings-header">
         <h1 className="gradient-text">Ustawienia</h1>
         <p className="subtitle">Dostosuj Tool do swoich potrzeb</p>
       </header>
+
+      {updateAvailable && (
+        <div className="update-banner">
+          <div className="update-banner-content">
+            <div className="update-banner-icon">🎉</div>
+            <div className="update-banner-text">
+              <h3>Nowa wersja dostępna!</h3>
+              <p>Wersja {updateAvailable.version} jest gotowa do pobrania</p>
+              {updateAvailable.releaseNotes && (
+                <p className="release-notes">{updateAvailable.releaseNotes}</p>
+              )}
+            </div>
+          </div>
+          <div className="update-banner-actions">
+            <button className="btn-update-download" onClick={handleDownloadUpdate}>
+              Pobierz teraz
+            </button>
+            <button className="btn-update-later" onClick={handleDismissUpdate}>
+              Później
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="settings-content">
         <section className="settings-section">
