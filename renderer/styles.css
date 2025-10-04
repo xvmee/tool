@@ -246,6 +246,18 @@ body.light-theme {
   padding: 20px;
   position: relative;
   overflow: hidden;
+  z-index: 100;
+}
+
+.navigation.benchmark-nav {
+  background: transparent;
+  border-right: none;
+  padding: 15px;
+  width: 200px;
+}
+
+.navigation.benchmark-nav::before {
+  display: none;
 }
 
 .navigation::before {
@@ -571,6 +583,11 @@ body.light-theme {
   padding: 32px;
   background: transparent;
   position: relative;
+}
+
+.main-content.fullscreen {
+  padding: 0;
+  overflow: hidden;
 }
 
 @keyframes float-reverse {

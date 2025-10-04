@@ -2,10 +2,31 @@ function Navigation({ currentView, onNavigate, systemStats }) {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'gameboost', label: 'Game Boost' },
+    { id: 'benchmark', label: 'Benchmark' },
     { id: 'cleaner', label: 'Czyszczenie' },
     { id: 'processes', label: 'Procesy' },
     { id: 'settings', label: 'Ustawienia' }
   ];
+
+  // W benchmarku pokaż tylko menu bez tła
+  if (currentView === 'benchmark') {
+    return (
+      <nav className="navigation benchmark-nav">
+        <div className="nav-menu">
+          {menuItems.map((item) => (
+            <button
+              key={item.id}
+              className={`nav-item ${currentView === item.id ? 'active' : ''}`}
+              onClick={() => onNavigate(item.id)}
+            >
+              <span className="nav-label">{item.label}</span>
+              {currentView === item.id && <div className="nav-indicator"></div>}
+            </button>
+          ))}
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <nav className="navigation">

@@ -131,6 +131,10 @@ function App() {
             addNotification={addNotification}
           />
         );
+      case 'benchmark':
+        return (
+          <Benchmark />
+        );
       case 'cleaner':
         return (
           <AdvancedCleaner 
@@ -170,7 +174,7 @@ function App() {
           systemStats={systemStats}
         />
         
-        <main className="main-content">
+        <main className={`main-content ${currentView === 'benchmark' ? 'fullscreen' : ''}`}>
           <NotificationCenter notifications={notifications} />
           {renderView()}
         </main>
