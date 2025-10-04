@@ -40,22 +40,58 @@ function Dashboard({ systemStats, onOptimizeRAM, onClearCache, addNotification }
   };
 
   const handleKillProcesses = async () => {
+    if (!window.confirm('Czy na pewno chcesz zamknąć nieużywane procesy? Ta operacja może zamknąć aktywne aplikacje.')) {
+      return;
+    }
+    
     addNotification('Zamykanie nieużywanych procesów...', 'info');
+    
+    // Lista procesów do zamknięcia (bezpieczne do zakończenia)
+    const processesToKill = [
+      'chrome.exe',
+      'msedge.exe', 
+      'firefox.exe',
+      'Teams.exe',
+      'Skype.exe',
+      'Zoom.exe',
+      'OneDrive.exe'
+    ];
+    
     let killed = 0;
-    for (const proc of processes.slice(0, 5)) {
+    
+    for (const procName of processesToKill) {
       try {
-        const result = await window.electronAPI.killProcess(proc.pid);
-        if (result.success) killed++;
+        // Znajdź proces po nazwie
+        const proc = processes.find(p => p.name.toLowerCase() === procName.toLowerCase());
+        if (proc) {
+          const result = await window.electronAPI.killProcess(proc.pid);
+          if (result.success) {
+            killed++;
+            await new Promise(resolve => setTimeout(resolve, 200));
+          }
+        }
       } catch (error) {
         console.error('Error killing process:', error);
       }
     }
-    addNotification(`Zamknięto ${killed} procesów`, 'success');
-    loadProcesses();
+    
+    if (killed > 0) {
+      addNotification(`Zamknięto ${killed} procesów`, 'success');
+    } else {
+      addNotification('Nie znaleziono procesów do zamknięcia', 'info');
+    }
+    
+    setTimeout(() => loadProcesses(), 1000);
   };
 
   const handleManageStartup = () => {
-    addNotification('Otwieranie menedżera autostartu...', 'info');
+    addNotification('Przechodzenie do zarządzania autostartem...', 'info');
+    // Emit event to navigate to settings
+    window.electronAPI.onOpenSettings(() => {});
+    setTimeout(() => {
+      const event = new Event('open-settings');
+      window.dispatchEvent(event);
+    }, 300);
   };
 
   if (!systemStats) {

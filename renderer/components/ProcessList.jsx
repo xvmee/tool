@@ -87,7 +87,7 @@ function ProcessList({ addNotification }) {
     <div className="process-list">
       <header className="process-header">
         <div className="header-content">
-          <h1 className="gradient-text">Menedżer Procesów</h1>
+          <h1 className="gradient-text">Menedżer Procesów <span className="beta-badge">BETA</span></h1>
           <p className="subtitle">Zarządzaj uruchomionymi procesami</p>
         </div>
         <div className="process-controls">

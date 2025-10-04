@@ -1,36 +1,46 @@
 function StartupManager({ apps, onRefresh }) {
   const [disabledApps, setDisabledApps] = React.useState([]);
+  const [loading, setLoading] = React.useState({});
 
   const toggleApp = async (app) => {
-    const willDisable = !disabledApps.includes(app.id);
+    const isCurrentlyEnabled = app.enabled && !disabledApps.includes(app.id);
+    const willEnable = !isCurrentlyEnabled;
+    
+    setLoading(prev => ({ ...prev, [app.id]: true }));
     
     try {
-      if (willDisable) {
-        // Disable startup
-        if (app.location?.includes('HKCU')) {
-          await window.electronAPI.runCommand(`reg delete "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" /v "${app.name}" /f`);
-        } else if (app.location?.includes('HKLM')) {
-          await window.electronAPI.runCommand(`reg delete "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" /v "${app.name}" /f`);
-        }
-        setDisabledApps([...disabledApps, app.id]);
-      } else {
-        // Re-enable would require knowing the original command
-        // For now, just remove from disabled list
-        setDisabledApps(disabledApps.filter(id => id !== app.id));
-      }
+      const result = await window.electronAPI.toggleStartupApp({
+        name: app.name,
+        location: app.location,
+        command: app.command,
+        enable: willEnable
+      });
       
-      // Refresh the list
-      setTimeout(() => onRefresh(), 500);
+      if (result.success) {
+        if (willEnable) {
+          setDisabledApps(disabledApps.filter(id => id !== app.id));
+        } else {
+          setDisabledApps([...disabledApps, app.id]);
+        }
+        
+        // Refresh the list after a short delay
+        setTimeout(() => onRefresh(), 500);
+      } else {
+        alert(result.error || 'Nie udało się zmienić ustawień autostartu');
+      }
     } catch (error) {
       console.error('Error toggling app:', error);
+      alert('Błąd: Wymagane uprawnienia administratora');
     }
+    
+    setLoading(prev => ({ ...prev, [app.id]: false }));
   };
 
   if (!apps || apps.length === 0) {
     return (
       <section className="settings-section">
         <div className="section-header">
-          <h2>🚀 Programy Autostartu</h2>
+          <h2>🚀 Programy Autostartu <span className="beta-badge">BETA</span></h2>
           <button className="btn-icon" onClick={onRefresh} title="Odśwież">
             ↻
           </button>
@@ -43,7 +53,7 @@ function StartupManager({ apps, onRefresh }) {
   return (
     <section className="settings-section">
       <div className="section-header">
-        <h2>🚀 Programy Autostartu ({apps.length})</h2>
+        <h2>🚀 Programy Autostartu ({apps.length}) <span className="beta-badge">BETA</span></h2>
         <button className="btn-icon" onClick={onRefresh} title="Odśwież">
           ↻
         </button>
@@ -52,6 +62,7 @@ function StartupManager({ apps, onRefresh }) {
         {apps.map((app) => {
           const isDisabled = disabledApps.includes(app.id);
           const isEnabled = app.enabled && !isDisabled;
+          const isLoading = loading[app.id];
           
           return (
             <div key={app.id} className="startup-item">
@@ -72,9 +83,10 @@ function StartupManager({ apps, onRefresh }) {
                 <button 
                   className={`btn-toggle ${isEnabled ? 'btn-disable' : 'btn-enable'}`}
                   onClick={() => toggleApp(app)}
+                  disabled={isLoading}
                   title={isEnabled ? 'Wyłącz' : 'Włącz'}
                 >
-                  {isEnabled ? '✕' : '✓'}
+                  {isLoading ? '⏳' : (isEnabled ? '✕' : '✓')}
                 </button>
               </div>
             </div>

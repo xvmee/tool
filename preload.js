@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   optimizeRAM: () => ipcRenderer.invoke('optimize-ram'),
   clearCache: () => ipcRenderer.invoke('clear-cache'),
   getStartupApps: () => ipcRenderer.invoke('get-startup-apps'),
+  toggleStartupApp: (data) => ipcRenderer.invoke('toggle-startup-app', data),
   saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
   loadSettings: () => ipcRenderer.invoke('load-settings'),
   setAutostart: (enable) => ipcRenderer.invoke('set-autostart', enable),

@@ -24,25 +24,28 @@ function GameBoost({ addNotification }) {
   const handleFPSBoost = async () => {
     if (!selectedGame && runningGames.length > 0) {
       setShowGameSelector(true);
-      addNotification('Wybierz grę do boostowania', 'info');
+      addNotification('Wybierz grę do boostowania lub zostaw puste dla optymalizacji systemowej', 'info');
       return;
     }
 
     setIsLoading(prev => ({ ...prev, fps: true }));
-    addNotification(`Aktywacja FPS Boost dla ${selectedGame || 'systemu'}...`, 'info');
+    addNotification(`Aktywacja FPS Boost${selectedGame ? ' dla ' + selectedGame.replace('.exe', '') : ''}...`, 'info');
     
     try {
       const result = await window.electronAPI.fpsBoost(selectedGame);
       if (result.success) {
         addNotification(result.message, 'success');
-        result.improvements?.forEach((imp, i) => {
-          setTimeout(() => addNotification(imp, 'success'), (i + 1) * 300);
-        });
+        if (result.improvements && result.improvements.length > 0) {
+          result.improvements.forEach((imp, i) => {
+            setTimeout(() => addNotification(imp, 'success'), (i + 1) * 400);
+          });
+        }
       } else {
-        addNotification(result.message, 'error');
+        addNotification(result.message || 'Nie udało się aktywować FPS Boost', 'error');
       }
     } catch (error) {
-      addNotification('Błąd podczas FPS Boost', 'error');
+      console.error('FPS Boost error:', error);
+      addNotification('Błąd podczas FPS Boost. Uruchom aplikację jako administrator.', 'error');
     }
     
     setIsLoading(prev => ({ ...prev, fps: false }));
@@ -57,14 +60,17 @@ function GameBoost({ addNotification }) {
       const result = await window.electronAPI.enableGameMode(selectedGame);
       if (result.success) {
         addNotification(result.message, 'success');
-        result.optimizations?.forEach((opt, i) => {
-          setTimeout(() => addNotification(opt, 'success'), (i + 1) * 300);
-        });
+        if (result.optimizations && result.optimizations.length > 0) {
+          result.optimizations.forEach((opt, i) => {
+            setTimeout(() => addNotification(opt, 'success'), (i + 1) * 400);
+          });
+        }
       } else {
-        addNotification(result.message, 'error');
+        addNotification(result.message || 'Nie udało się włączyć Game Mode', 'error');
       }
     } catch (error) {
-      addNotification('Błąd podczas Game Mode', 'error');
+      console.error('Game Mode error:', error);
+      addNotification('Błąd podczas Game Mode. Uruchom aplikację jako administrator.', 'error');
     }
     
     setIsLoading(prev => ({ ...prev, game: false }));
@@ -78,14 +84,17 @@ function GameBoost({ addNotification }) {
       const result = await window.electronAPI.networkBoost();
       if (result.success) {
         addNotification(result.message, 'success');
-        result.improvements?.forEach((imp, i) => {
-          setTimeout(() => addNotification(imp, 'success'), (i + 1) * 300);
-        });
+        if (result.improvements && result.improvements.length > 0) {
+          result.improvements.forEach((imp, i) => {
+            setTimeout(() => addNotification(imp, 'success'), (i + 1) * 400);
+          });
+        }
       } else {
-        addNotification(result.message, 'error');
+        addNotification(result.message || 'Nie udało się zoptymalizować sieci', 'error');
       }
     } catch (error) {
-      addNotification('Błąd podczas Network Boost', 'error');
+      console.error('Network Boost error:', error);
+      addNotification('Błąd podczas Network Boost. Uruchom aplikację jako administrator.', 'error');
     }
     
     setIsLoading(prev => ({ ...prev, network: false }));
@@ -99,14 +108,17 @@ function GameBoost({ addNotification }) {
       const result = await window.electronAPI.optimizeGPU();
       if (result.success) {
         addNotification(result.message, 'success');
-        result.improvements?.forEach((imp, i) => {
-          setTimeout(() => addNotification(imp, 'success'), (i + 1) * 300);
-        });
+        if (result.improvements && result.improvements.length > 0) {
+          result.improvements.forEach((imp, i) => {
+            setTimeout(() => addNotification(imp, 'success'), (i + 1) * 400);
+          });
+        }
       } else {
-        addNotification(result.message, 'error');
+        addNotification(result.message || 'Nie udało się zoptymalizować GPU', 'error');
       }
     } catch (error) {
-      addNotification('Błąd podczas optymalizacji GPU', 'error');
+      console.error('GPU Optimize error:', error);
+      addNotification('Błąd podczas optymalizacji GPU. Sprawdź uprawnienia.', 'error');
     }
     
     setIsLoading(prev => ({ ...prev, gpu: false }));
@@ -120,14 +132,17 @@ function GameBoost({ addNotification }) {
       const result = await window.electronAPI.disableTelemetry();
       if (result.success) {
         addNotification(result.message, 'success');
-        result.improvements?.forEach((imp, i) => {
-          setTimeout(() => addNotification(imp, 'success'), (i + 1) * 300);
-        });
+        if (result.improvements && result.improvements.length > 0) {
+          result.improvements.forEach((imp, i) => {
+            setTimeout(() => addNotification(imp, 'success'), (i + 1) * 400);
+          });
+        }
       } else {
-        addNotification(result.message, 'error');
+        addNotification(result.message || 'Nie udało się wyłączyć telemetrii', 'error');
       }
     } catch (error) {
-      addNotification('Błąd podczas wyłączania telemetrii', 'error');
+      console.error('Disable Telemetry error:', error);
+      addNotification('Błąd podczas wyłączania telemetrii. Uruchom jako administrator.', 'error');
     }
     
     setIsLoading(prev => ({ ...prev, telemetry: false }));
@@ -192,9 +207,10 @@ function GameBoost({ addNotification }) {
           <p>Zamknij niepotrzebne procesy w tle</p>
           <ul className="boost-features">
             <li>Zamknij Chrome/Edge/Firefox</li>
-            <li>Zamknij Discord/Teams/Spotify</li>
             <li>Wstrzymaj Windows Update</li>
-            <li>Wyłącz Windows Search{selectedGame && <li className="protected-game">✓ Ochrona: {selectedGame.replace('.exe', '')}</li>}</li>
+            <li>Wyłącz Windows Search</li>
+            <li>Skupienie wydajności na grze</li>
+            {selectedGame && <li className="protected-game">✓ Ochrona: {selectedGame.replace('.exe', '')}</li>}
           </ul>
           <button 
             className={`boost-button ${isLoading.game ? 'loading' : ''}`}

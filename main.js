@@ -636,9 +636,9 @@ const setupIPC = () => {
         const processesToKill = [
           'OneDrive.exe',
           'Teams.exe',
-          'Spotify.exe',
-          'SpotifyWebHelper.exe',
-          'Discord.exe',
+          // 'Spotify.exe',  // Zachowaj - dobry do grania
+          // 'SpotifyWebHelper.exe',
+          // 'Discord.exe',  // Zachowaj - komunikacja
           'chrome.exe',
           'msedge.exe',
           'firefox.exe',
@@ -655,7 +655,9 @@ const setupIPC = () => {
           'Outlook.exe',
           'WINWORD.EXE',
           'EXCEL.EXE',
-          'Dropbox.exe'
+          'Dropbox.exe',
+          'Notion.exe',
+          'AdobeCollabSync.exe'
         ];
         
         // Exclude selected game process
@@ -673,19 +675,23 @@ const setupIPC = () => {
               if (!stdout.includes(proc)) killed++;
             });
             
-            // Additional optimization: Set process priority for remaining apps
+            // Additional optimization: Set process priority and performance
             const optimizeCommands = [
-              // Boost system responsiveness
-              'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 0 /f',
+              // Boost system responsiveness for games
+              'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 0 /f 2>nul',
+              // Set GPU priority for games
+              'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games" /v "GPU Priority" /t REG_DWORD /d 8 /f 2>nul',
+              'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games" /v Priority /t REG_DWORD /d 6 /f 2>nul',
+              'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games" /v "Scheduling Category" /t REG_SZ /d High /f 2>nul',
               // Disable Windows Search indexing temporarily
-              'sc config "WSearch" start=disabled',
-              'net stop "WSearch"',
+              'sc config "WSearch" start=disabled 2>nul',
+              'net stop "WSearch" 2>nul',
               // Disable Superfetch/Prefetch
-              'sc config "SysMain" start=disabled',
-              'net stop "SysMain"',
+              'sc config "SysMain" start=disabled 2>nul',
+              'net stop "SysMain" 2>nul',
               // Disable Windows Update temporarily
-              'sc config "wuauserv" start=disabled',
-              'net stop "wuauserv"'
+              'sc config "wuauserv" start=disabled 2>nul',
+              'net stop "wuauserv" 2>nul'
             ].join(' & ');
             
             exec(optimizeCommands, () => {
@@ -693,14 +699,16 @@ const setupIPC = () => {
                 success: true, 
                 killed,
                 excluded: excludeProcess || 'Brak',
-                message: `Game Mode aktywny! Zamknięto ${killed} procesów. ${excludeProcess ? `Zachowano: ${excludeProcess}` : ''}`,
+                message: `Game Mode aktywny! Zamknięto ${killed} niepotrzebnych procesów.${excludeProcess ? ` Gra chroniona: ${excludeProcess}` : ''}`,
                 processes: toKill,
                 optimizations: [
-                  '✓ Zwiększono responsywność systemu',
+                  '✓ Skupienie wydajności na grze',
+                  '✓ Priorytet GPU ustawiony na High',
                   '✓ Wyłączono Windows Search',
                   '✓ Wyłączono Superfetch/Prefetch',
                   '✓ Wstrzymano Windows Update',
-                  `✓ Zamknięto ${killed} aplikacji w tle`
+                  `✓ Zamknięto ${killed} niepotrzebnych aplikacji`,
+                  '✓ Zachowano Discord i Spotify'
                 ]
               });
             });

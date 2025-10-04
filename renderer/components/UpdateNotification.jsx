@@ -143,9 +143,10 @@ function UpdateNotification() {
               {updateState.releaseNotes && (
                 <div className="release-notes">
                   <h4>Co nowego:</h4>
-                  <div className="release-notes-content">
-                    {updateState.releaseNotes}
-                  </div>
+                  <div 
+                    className="release-notes-content"
+                    dangerouslySetInnerHTML={{ __html: updateState.releaseNotes }}
+                  />
                 </div>
               )}
 
