@@ -39,13 +39,9 @@ jobs:
         shell: powershell
       
       - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Tool v${{ steps.get_version.outputs.VERSION }}
+          name: Tool v${{ steps.get_version.outputs.VERSION }}
           body: |
             ## 🎉 Tool v${{ steps.get_version.outputs.VERSION }}
             
@@ -58,7 +54,10 @@ jobs:
             3. Postępuj zgodnie z kreatorem instalacji
             
             ### ✨ Co nowego
-            - Zobacz pełny changelog poniżej
+            - Naprawiono czarny ekran
+            - Dodano lokalne biblioteki React
+            - Bezpieczny auto-updater
+            - Powiększono logo
             
             ### ⚙️ Wymagania
             - Windows 10/11 (64-bit)
@@ -66,25 +65,10 @@ jobs:
             
             ---
             **Automatycznie wygenerowane przez GitHub Actions**
+          files: |
+            ./dist/Tool-Setup-${{ steps.get_version.outputs.VERSION }}.exe
+            ./dist/latest.yml
           draft: false
           prerelease: false
-      
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/Tool-Setup-${{ steps.get_version.outputs.VERSION }}.exe
-          asset_name: Tool-Setup-${{ steps.get_version.outputs.VERSION }}.exe
-          asset_content_type: application/octet-stream
-      
-      - name: Upload latest.yml for auto-updater
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/latest.yml
-          asset_name: latest.yml
-          asset_content_type: text/yaml
