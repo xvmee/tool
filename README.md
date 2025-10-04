@@ -3,7 +3,7 @@
   
   # Tool 1.0.6v
 
-  ![Tool Logo](https://img.shields.io/badge/Tool-v1.0.3-purple?style=for-the-badge)
+  ![Tool Logo](https://img.shields.io/badge/Tool-v1.0.6-purple?style=for-the-badge)
   ![Electron](https://img.shields.io/badge/Electron-27.0-blue?style=for-the-badge)
   ![React](https://img.shields.io/badge/React-18.2-cyan?style=for-the-badge)
 
