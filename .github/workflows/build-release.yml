@@ -6,6 +6,9 @@ on:
       - 'v*.*.*'  # Triggeruje się na tagach typu v2.1.0, v2.2.0, etc.
   workflow_dispatch:  # Możliwość ręcznego uruchomienia
 
+permissions:
+  contents: write  # Uprawnienia do tworzenia releases
+
 jobs:
   build-and-release:
     runs-on: windows-latest

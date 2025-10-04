@@ -188,7 +188,7 @@ function Settings({ settings, onSaveSettings, addNotification }) {
           <h2>ℹ️ Informacje</h2>
           <div className="info-box">
             <div className="app-info">
-              <h3>Tool v1.0.0</h3>
+              <h3>Tool v2.2.0</h3>
               <p>Advanced System Optimization Tool</p>
               <p className="app-website" onClick={openWebsite}>🌐 tooltech.pl</p>
             </div>
