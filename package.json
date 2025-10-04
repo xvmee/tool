@@ -1,6 +1,6 @@
 {
   "name": "tool",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Advanced System Optimization & Gaming Boost - tooltech.pl",
   "main": "main.js",
   "author": "tooltech.pl <contact@tooltech.pl>",
@@ -35,7 +35,7 @@
       "renderer/**/*",
       "assets/**/*",
       "package.json",
-      "!node_modules/**/*",
+      "node_modules/electron-updater/**/*",
       "!dist/**/*"
     ],
     "win": {
@@ -87,6 +87,7 @@
     "electron-builder": "^26.0.12"
   },
   "dependencies": {
+    "@babel/standalone": "^7.28.4",
     "electron-updater": "^6.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

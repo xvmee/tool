@@ -1,5 +1,4 @@
 const { app, BrowserWindow, ipcMain, Menu, Tray, globalShortcut, dialog, shell } = require('electron');
-const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const os = require('os');
 const { exec } = require('child_process');
@@ -9,9 +8,18 @@ let mainWindow;
 let tray;
 let systemStatsInterval;
 
-// Konfiguracja auto-updater
-autoUpdater.autoDownload = false; // Nie pobieraj automatycznie, zapytaj użytkownika
-autoUpdater.autoInstallOnAppQuit = true; // Zainstaluj przy zamknięciu
+// Auto-updater będzie załadowany tylko w spakowanej aplikacji
+let autoUpdater = null;
+if (app.isPackaged) {
+  try {
+    autoUpdater = require('electron-updater').autoUpdater;
+    autoUpdater.autoDownload = false;
+    autoUpdater.autoInstallOnAppQuit = true;
+    console.log('Auto-updater enabled');
+  } catch (err) {
+    console.log('Auto-updater not available:', err.message);
+  }
+}
 
 const createWindow = () => {
   mainWindow = new BrowserWindow({
@@ -35,6 +43,11 @@ const createWindow = () => {
 
   mainWindow.loadFile('renderer/index.html');
 
+  // W DEV otwórz DevTools żeby zobaczyć błędy
+  if (!app.isPackaged) {
+    mainWindow.webContents.openDevTools();
+  }
+
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
   });
@@ -48,10 +61,12 @@ const createWindow = () => {
   setupIPC();
   createMenu();
   
-  // Sprawdź aktualizacje po uruchomieniu (z opóźnieniem 3 sekundy)
-  setTimeout(() => {
-    checkForUpdates();
-  }, 3000);
+  // Sprawdź aktualizacje po uruchomieniu (tylko w spakowanej wersji)
+  if (autoUpdater) {
+    setTimeout(() => {
+      checkForUpdates();
+    }, 3000);
+  }
 };
 
 // Helper do uruchamiania komend z renderera
@@ -937,76 +952,98 @@ const showAboutDialog = () => {
 
 // Auto-updater: Sprawdzanie aktualizacji
 const checkForUpdates = () => {
-  if (!mainWindow) return;
+  if (!mainWindow || !autoUpdater) return;
+  
+  // Nie sprawdzaj aktualizacji w trybie dev (gdy aplikacja nie jest spakowana)
+  if (!app.isPackaged) {
+    console.log('Skip checkForUpdates - DEV MODE (aplikacja nie spakowana)');
+    return;
+  }
   
   console.log('Checking for updates...');
-  autoUpdater.checkForUpdates();
+  try {
+    autoUpdater.checkForUpdates();
+  } catch (err) {
+    console.error('Error checking for updates:', err);
+  }
 };
 
-// Auto-updater event handlers
-autoUpdater.on('checking-for-update', () => {
-  console.log('Checking for update...');
-  if (mainWindow) {
-    mainWindow.webContents.send('update-status', { status: 'checking' });
-  }
-});
+// Auto-updater event handlers - tylko jeśli autoUpdater istnieje
+if (autoUpdater) {
+  autoUpdater.on('checking-for-update', () => {
+    console.log('Checking for update...');
+    if (mainWindow) {
+      mainWindow.webContents.send('update-status', { status: 'checking' });
+    }
+  });
 
-autoUpdater.on('update-available', (info) => {
-  console.log('Update available:', info.version);
-  if (mainWindow) {
-    mainWindow.webContents.send('update-available', {
-      version: info.version,
-      releaseDate: info.releaseDate,
-      releaseNotes: info.releaseNotes
-    });
-  }
-});
+  autoUpdater.on('update-available', (info) => {
+    console.log('Update available:', info.version);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-available', {
+        version: info.version,
+        releaseDate: info.releaseDate,
+        releaseNotes: info.releaseNotes
+      });
+    }
+  });
 
-autoUpdater.on('update-not-available', (info) => {
-  console.log('Update not available. Current version:', info.version);
-  if (mainWindow) {
-    mainWindow.webContents.send('update-status', { status: 'not-available', version: info.version });
-  }
-});
+  autoUpdater.on('update-not-available', (info) => {
+    console.log('Update not available. Current version:', info.version);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-status', { status: 'not-available', version: info.version });
+    }
+  });
 
-autoUpdater.on('error', (err) => {
-  console.error('Update error:', err);
-  if (mainWindow) {
-    mainWindow.webContents.send('update-error', { error: err.message });
-  }
-});
+  autoUpdater.on('error', (err) => {
+    console.error('Update error:', err);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-error', { error: err.message });
+    }
+  });
 
-autoUpdater.on('download-progress', (progressObj) => {
-  console.log(`Download speed: ${progressObj.bytesPerSecond} - Downloaded ${progressObj.percent}%`);
-  if (mainWindow) {
-    mainWindow.webContents.send('update-download-progress', {
-      percent: progressObj.percent,
-      transferred: progressObj.transferred,
-      total: progressObj.total,
-      bytesPerSecond: progressObj.bytesPerSecond
-    });
-  }
-});
+  autoUpdater.on('download-progress', (progressObj) => {
+    console.log(`Download speed: ${progressObj.bytesPerSecond} - Downloaded ${progressObj.percent}%`);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-download-progress', {
+        percent: progressObj.percent,
+        transferred: progressObj.transferred,
+        total: progressObj.total,
+        bytesPerSecond: progressObj.bytesPerSecond
+      });
+    }
+  });
 
-autoUpdater.on('update-downloaded', (info) => {
-  console.log('Update downloaded:', info.version);
-  if (mainWindow) {
-    mainWindow.webContents.send('update-downloaded', {
-      version: info.version
-    });
-  }
-});
+  autoUpdater.on('update-downloaded', (info) => {
+    console.log('Update downloaded:', info.version);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-downloaded', {
+        version: info.version
+      });
+    }
+  });
+}
 
-// IPC handlers dla auto-updater
-ipcMain.on('download-update', () => {
-  console.log('Starting update download...');
-  autoUpdater.downloadUpdate();
-});
+// IPC handlers dla auto-updater - tylko jeśli autoUpdater istnieje
+if (autoUpdater) {
+  ipcMain.on('download-update', () => {
+    console.log('Starting update download...');
+    try {
+      autoUpdater.downloadUpdate();
+    } catch (err) {
+      console.error('Error downloading update:', err);
+    }
+  });
 
-ipcMain.on('install-update', () => {
-  console.log('Installing update...');
-  autoUpdater.quitAndInstall(false, true);
-});
+  ipcMain.on('install-update', () => {
+    console.log('Installing update...');
+    try {
+      autoUpdater.quitAndInstall(false, true);
+    } catch (err) {
+      console.error('Error installing update:', err);
+    }
+  });
+}
 
 app.whenReady().then(() => {
   createWindow();

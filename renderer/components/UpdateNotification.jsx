@@ -1,8 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import '../styles/UpdateNotification.css';
-
-const UpdateNotification = () => {
-  const [updateState, setUpdateState] = useState({
+function UpdateNotification() {
+  const [updateState, setUpdateState] = React.useState({
     checking: false,
     available: false,
     downloading: false,
@@ -16,9 +13,9 @@ const UpdateNotification = () => {
     total: 0
   });
 
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Sprawdzanie aktualizacji
     window.api.on('update-status', (data) => {
       if (data.status === 'checking') {
@@ -213,6 +210,4 @@ const UpdateNotification = () => {
       </div>
     </div>
   );
-};
-
-export default UpdateNotification;
+}
