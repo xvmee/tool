@@ -9,7 +9,7 @@
 
   Profesjonalna aplikacja desktopowa do optymalizacji i monitoringu systemu, stworzona w Electron + React.
 
-  🌐 **Website:** [tooltech.pl](https://tooltech.pl)
+  🌐 **Website:** [optitool.pl](https://optitool.pl)
   
 </div>
 
