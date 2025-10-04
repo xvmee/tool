@@ -14,6 +14,14 @@ function App() {
   });
 
   useEffect(() => {
+    console.log('[App] Checking window.electronAPI:', window.electronAPI);
+    console.log('[App] Checking window.api:', window.api);
+    
+    if (!window.electronAPI) {
+      console.error('[App] window.electronAPI is not available! Preload script may not be loaded.');
+      return;
+    }
+    
     const loadingTimer = setTimeout(() => {
       setIsLoading(false);
     }, 3000);
@@ -39,6 +47,12 @@ function App() {
   }, [settings.refreshInterval]);
 
   const loadSettings = async () => {
+    if (!window.electronAPI) {
+      console.error('[App] Cannot load settings - electronAPI not available');
+      document.body.className = 'dark-theme';
+      return;
+    }
+    
     const savedSettings = await window.electronAPI.loadSettings();
     if (savedSettings) {
       setSettings(savedSettings);
@@ -50,11 +64,18 @@ function App() {
 
   const saveSettings = async (newSettings) => {
     setSettings(newSettings);
-    await window.electronAPI.saveSettings(newSettings);
+    if (window.electronAPI) {
+      await window.electronAPI.saveSettings(newSettings);
+    }
     document.body.className = newSettings.theme === 'dark' ? 'dark-theme' : 'light-theme';
   };
 
   const fetchSystemStats = async () => {
+    if (!window.electronAPI) {
+      console.error('[App] Cannot fetch stats - electronAPI not available');
+      return;
+    }
+    
     try {
       const stats = await window.electronAPI.getSystemStats();
       setSystemStats(stats);

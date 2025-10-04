@@ -11,9 +11,17 @@ function Settings({ settings, onSaveSettings, addNotification }) {
     checkForPendingUpdate();
     
     // Pobierz wersję aplikacji
-    if (window.electronAPI && window.electronAPI.getAppVersion) {
-      setAppVersion(window.electronAPI.getAppVersion());
-    }
+    const fetchVersion = async () => {
+      if (window.electronAPI && window.electronAPI.getAppVersion) {
+        try {
+          const version = await window.electronAPI.getAppVersion();
+          setAppVersion(version);
+        } catch (error) {
+          console.error('Failed to get app version:', error);
+        }
+      }
+    };
+    fetchVersion();
   }, [settings]);
 
   const checkForPendingUpdate = () => {

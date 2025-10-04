@@ -1,8 +1,9 @@
 const { contextBridge, ipcRenderer } = require('electron');
-const { version } = require('./package.json');
+
+console.log('[Preload] Script loaded successfully');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  getAppVersion: () => version,
+  getAppVersion: () => ipcRenderer.invoke('get-app-version'),
   getSystemStats: () => ipcRenderer.invoke('get-system-stats'),
   getDiskUsage: () => ipcRenderer.invoke('get-disk-usage'),
   getProcesses: () => ipcRenderer.invoke('get-processes'),
@@ -97,3 +98,5 @@ contextBridge.exposeInMainWorld('api', {
     }
   }
 });
+
+console.log('[Preload] All APIs exposed successfully');

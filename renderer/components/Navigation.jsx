@@ -2,9 +2,17 @@ function Navigation({ currentView, onNavigate, systemStats }) {
   const [appVersion, setAppVersion] = React.useState('1.0.0');
 
   React.useEffect(() => {
-    if (window.electronAPI && window.electronAPI.getAppVersion) {
-      setAppVersion(window.electronAPI.getAppVersion());
-    }
+    const fetchVersion = async () => {
+      if (window.electronAPI && window.electronAPI.getAppVersion) {
+        try {
+          const version = await window.electronAPI.getAppVersion();
+          setAppVersion(version);
+        } catch (error) {
+          console.error('Failed to get app version:', error);
+        }
+      }
+    };
+    fetchVersion();
   }, []);
 
   const menuItems = [

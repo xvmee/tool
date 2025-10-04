@@ -37,6 +37,10 @@ if (app.isPackaged) {
 }
 
 const createWindow = () => {
+  const preloadPath = path.join(__dirname, 'preload.js');
+  console.log('[Main] Creating window with preload:', preloadPath);
+  console.log('[Main] Preload file exists:', fs.existsSync(preloadPath));
+  
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
@@ -46,7 +50,8 @@ const createWindow = () => {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js'),
+      sandbox: false,
+      preload: preloadPath,
       webSecurity: false
     },
     frame: false,
@@ -177,6 +182,10 @@ const registerShortcuts = () => {
 let lastCpuInfo = { idle: 0, total: 0 };
 
 const setupIPC = () => {
+  ipcMain.handle('get-app-version', async () => {
+    return app.getVersion();
+  });
+  
   ipcMain.handle('get-system-stats', async () => {
     const cpus = os.cpus();
     const totalMem = os.totalmem();

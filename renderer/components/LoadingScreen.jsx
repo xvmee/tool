@@ -52,7 +52,7 @@ function LoadingScreen() {
       </div>
 
       <div className="loading-footer">
-        <p>v1.0.1</p>
+        <p>v1.0.7</p>
       </div>
     </div>
   );
