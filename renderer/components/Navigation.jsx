@@ -2,6 +2,7 @@ function Navigation({ currentView, onNavigate, systemStats }) {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'gameboost', label: 'Game Boost' },
+    { id: 'aihelper', label: 'AI Helper' },
     { id: 'benchmark', label: 'Benchmark' },
     { id: 'cleaner', label: 'Czyszczenie' },
     { id: 'processes', label: 'Procesy' },
@@ -83,7 +84,7 @@ function Navigation({ currentView, onNavigate, systemStats }) {
       )}
 
       <div className="nav-footer">
-        <p className="version-text">v1.0.3</p>
+        <p className="version-text">v1.0.4</p>
         <p className="copyright">© 2025 tooltech.pl</p>
       </div>
     </nav>

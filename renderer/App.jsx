@@ -131,6 +131,10 @@ function App() {
             addNotification={addNotification}
           />
         );
+      case 'aihelper':
+        return (
+          <AIHelper />
+        );
       case 'benchmark':
         return (
           <Benchmark />
