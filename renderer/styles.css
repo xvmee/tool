@@ -2139,6 +2139,60 @@ body.light-theme {
   margin-bottom: 4px;
 }
 
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.social-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.social-link.discord {
+  border-color: #5865f2;
+}
+
+.social-link.discord:hover {
+  background: #5865f2;
+  color: white;
+  box-shadow: 0 8px 24px rgba(88, 101, 242, 0.4);
+}
+
+.social-link.github {
+  border-color: #6e40c9;
+}
+
+.social-link.github:hover {
+  background: #6e40c9;
+  color: white;
+  box-shadow: 0 8px 24px rgba(110, 64, 201, 0.4);
+}
+
+.social-link svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
 .settings-actions {
   display: flex;
   justify-content: flex-end;
