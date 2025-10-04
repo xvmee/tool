@@ -1,7 +1,7 @@
 <div align="center">
   <img src="assets/Tool.png" alt="Tool Logo" width="150" />
   
-  # Tool 2.10v
+  # Tool 1.0.3v
 
   ![Tool Logo](https://img.shields.io/badge/Tool-v1.0.0-purple?style=for-the-badge)
   ![Electron](https://img.shields.io/badge/Electron-27.0-blue?style=for-the-badge)
@@ -18,6 +18,7 @@
 - **Skanowanie komputera oraz usuwanie niepotrzebnych plików**
 - **Optymalizowanie Podzespołów**
 - **Game Boost**
+- **Benchmark**
 ### **i wiele więcej!**
 ---
 
