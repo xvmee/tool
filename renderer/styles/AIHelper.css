@@ -122,6 +122,26 @@
   white-space: pre-wrap;
 }
 
+.message-text strong {
+  font-weight: 700;
+  color: var(--purple-primary);
+}
+
+.message-text em {
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.message-text code {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 13px;
+  color: var(--blue-primary);
+}
+
 .ai-message.assistant .message-text {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);

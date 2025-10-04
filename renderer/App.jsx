@@ -135,10 +135,6 @@ function App() {
         return (
           <AIHelper />
         );
-      case 'benchmark':
-        return (
-          <Benchmark />
-        );
       case 'cleaner':
         return (
           <AdvancedCleaner 

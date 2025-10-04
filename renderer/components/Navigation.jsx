@@ -3,7 +3,6 @@ function Navigation({ currentView, onNavigate, systemStats }) {
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'gameboost', label: 'Game Boost' },
     { id: 'aihelper', label: 'AI Helper' },
-    { id: 'benchmark', label: 'Benchmark' },
     { id: 'cleaner', label: 'Czyszczenie' },
     { id: 'processes', label: 'Procesy' },
     { id: 'settings', label: 'Ustawienia' }
@@ -84,7 +83,7 @@ function Navigation({ currentView, onNavigate, systemStats }) {
       )}
 
       <div className="nav-footer">
-        <p className="version-text">v1.0.4</p>
+              <div className="app-version">v1.0.5</div>
         <p className="copyright">© 2025 tooltech.pl</p>
       </div>
     </nav>

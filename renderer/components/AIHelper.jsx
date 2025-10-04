@@ -18,13 +18,12 @@ function AIHelper() {
     scrollToBottom();
   }, [messages]);
 
-  // Obfuskowany klucz API (Base64)
   const getApiKey = () => {
     const encoded = 'Z3NrXzFrb3ZidW1YMVRpVEx6TXV6RDRBV0dkeWIzRll2MkhQaFVPZndiM3p6ZTdBMTY2SEljTjI=';
     return atob(encoded);
   };
 
-  const SYSTEM_PROMPT = `Jesteś AI Helper - profesjonalnym asystentem technicznym specjalizującym się w pomocy użytkownikom komputerów.
+  const SYSTEM_PROMPT = `Nazywasz sie ToolAI i jesteś AI Asystentem - profesjonalnym asystentem technicznym specjalizującym się w pomocy użytkownikom komputerów.
 
 TWOJE KOMPETENCJE:
 - Diagnozowanie i rozwiązywanie problemów z systemem Windows
@@ -125,7 +124,7 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
     setMessages([
       {
         role: 'assistant',
-        content: 'Cześć! Jestem AI Helper. Mogę pomóc Ci z problemami związanymi z komputerem, systemem Windows, optymalizacją wydajności i rozwiązywaniem błędów. Jak mogę Ci dzisiaj pomóc? 🤖'
+        content: 'Cześć! Jestem ToolAI. Mogę pomóc Ci z problemami związanymi z komputerem, systemem Windows, optymalizacją wydajności i rozwiązywaniem błędów. Jak mogę Ci dzisiaj pomóc? 🤖'
       }
     ]);
     setError(null);
@@ -139,12 +138,31 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
     "Jak wyczyścić dysk z niepotrzebnych plików?"
   ];
 
+  // Format markdown text
+  const formatMarkdown = (text) => {
+    if (!text) return '';
+    
+    // Bold: **text** -> <strong>text</strong>
+    let formatted = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    
+    // Italic: *text* -> <em>text</em>
+    formatted = formatted.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    
+    // Code: `code` -> <code>code</code>
+    formatted = formatted.replace(/`(.+?)`/g, '<code>$1</code>');
+    
+    // Line breaks
+    formatted = formatted.replace(/\n/g, '<br/>');
+    
+    return formatted;
+  };
+
   return (
     <div className="ai-helper">
       <header className="ai-helper-header">
         <div className="ai-header-content">
-          <h1 className="gradient-text">AI Helper</h1>
-          <p className="subtitle">Profesjonalny asystent techniczny powered by GroqCloud</p>
+          <h1 className="gradient-text">ToolAI</h1>
+          <p className="subtitle">Profesjonalny asystent techniczny, zapytaj mnie o temat komputerowy!</p>
         </div>
         <button className="btn-clear-chat" onClick={clearChat} title="Wyczyść czat">
           🗑️ Wyczyść
@@ -159,7 +177,10 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
                 {msg.role === 'assistant' ? '🤖' : '👤'}
               </div>
               <div className="message-content">
-                <div className="message-text">{msg.content}</div>
+                <div 
+                  className="message-text"
+                  dangerouslySetInnerHTML={{ __html: formatMarkdown(msg.content) }}
+                />
                 <div className="message-time">
                   {new Date().toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' })}
                 </div>
@@ -185,7 +206,7 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
 
         {messages.length === 1 && (
           <div className="quick-questions">
-            <p className="quick-title">💡 Przykładowe pytania:</p>
+            <p className="quick-title">Szybkie Pytania:</p>
             <div className="quick-buttons">
               {quickQuestions.map((q, idx) => (
                 <button
@@ -231,7 +252,7 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
           <span className="ai-status">
             {isLoading ? '⚡ Myślę...' : '✅ Gotowy do pomocy'}
           </span>
-          <span className="ai-powered">Powered by Groq AI</span>
+          <span className="ai-powered">Powered by ToolAI</span>
         </div>
       </div>
     </div>

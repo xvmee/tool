@@ -279,7 +279,7 @@ body.light-theme {
 }
 
 .nav-header {
-  margin-bottom: 40px;
+  margin-bottom: 8px;
 }
 
 .app-logo {
@@ -287,7 +287,7 @@ body.light-theme {
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 20px 0;
+  padding: 12px 0;
 }
 
 .logo-image-full {
@@ -401,7 +401,7 @@ body.light-theme {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 0;
 }
 
 .nav-item {
