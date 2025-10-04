@@ -4,7 +4,6 @@ function GameBoost({ addNotification }) {
   const [selectedGame, setSelectedGame] = React.useState('');
   const [showGameSelector, setShowGameSelector] = React.useState(false);
 
-  // Load running games on component mount
   React.useEffect(() => {
     loadRunningGames();
   }, []);
@@ -151,7 +150,7 @@ function GameBoost({ addNotification }) {
   return (
     <div className="game-boost">
       <div className="boost-header">
-        <h2>⚡ Gaming & Performance</h2>
+        <h2>Gaming & Performance</h2>
         <p>Maksymalna wydajność dla gier i aplikacji</p>
         
         {runningGames.length > 0 && (
@@ -175,7 +174,7 @@ function GameBoost({ addNotification }) {
               onClick={loadRunningGames}
               title="Odśwież listę gier"
             >
-              🔄
+              Odśwież
             </button>
           </div>
         )}
@@ -183,7 +182,6 @@ function GameBoost({ addNotification }) {
 
       <div className="boost-grid">
         <div className="boost-card">
-          <div className="boost-icon">🎮</div>
           <h3>FPS Boost</h3>
           <p>Optymalizacja GPU i CPU dla wyższych FPS</p>
           <ul className="boost-features">
@@ -202,7 +200,6 @@ function GameBoost({ addNotification }) {
         </div>
 
         <div className="boost-card">
-          <div className="boost-icon">🚀</div>
           <h3>Game Mode</h3>
           <p>Zamknij niepotrzebne procesy w tle</p>
           <ul className="boost-features">
@@ -222,7 +219,6 @@ function GameBoost({ addNotification }) {
         </div>
 
         <div className="boost-card">
-          <div className="boost-icon">🌐</div>
           <h3>Network Boost</h3>
           <p>Niższy ping i lepsza stabilność</p>
           <ul className="boost-features">
@@ -241,7 +237,6 @@ function GameBoost({ addNotification }) {
         </div>
 
         <div className="boost-card">
-          <div className="boost-icon">🎨</div>
           <h3>GPU Optimization</h3>
           <p>Wyczyść shader cache i popraw rendering</p>
           <ul className="boost-features">
@@ -260,7 +255,6 @@ function GameBoost({ addNotification }) {
         </div>
 
         <div className="boost-card">
-          <div className="boost-icon">🔒</div>
           <h3>Disable Telemetry</h3>
           <p>Wyłącz telemetrię Windows dla prywatności</p>
           <ul className="boost-features">
@@ -280,7 +274,6 @@ function GameBoost({ addNotification }) {
       </div>
 
       <div className="boost-info">
-        <div className="info-icon">ℹ️</div>
         <div className="info-text">
           <strong>Uwaga:</strong> Niektóre funkcje wymagają uprawnień administratora. 
           Uruchom aplikację jako administrator dla pełnej funkcjonalności.

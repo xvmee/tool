@@ -16,17 +16,14 @@ function UpdateNotification() {
   const [visible, setVisible] = React.useState(false);
 
   React.useEffect(() => {
-    // Sprawdzanie aktualizacji
     window.api.on('update-status', (data) => {
       if (data.status === 'checking') {
         setUpdateState(prev => ({ ...prev, checking: true }));
       } else if (data.status === 'not-available') {
         setUpdateState(prev => ({ ...prev, checking: false, available: false }));
-        // Nie pokazuj notyfikacji jeśli brak aktualizacji
       }
     });
 
-    // Aktualizacja dostępna
     window.api.on('update-available', (data) => {
       setUpdateState(prev => ({
         ...prev,
@@ -38,7 +35,6 @@ function UpdateNotification() {
       setVisible(true);
     });
 
-    // Postęp pobierania
     window.api.on('update-download-progress', (data) => {
       setUpdateState(prev => ({
         ...prev,
@@ -50,7 +46,6 @@ function UpdateNotification() {
       }));
     });
 
-    // Aktualizacja pobrana
     window.api.on('update-downloaded', (data) => {
       setUpdateState(prev => ({
         ...prev,
@@ -60,7 +55,6 @@ function UpdateNotification() {
       }));
     });
 
-    // Błąd
     window.api.on('update-error', (data) => {
       setUpdateState(prev => ({
         ...prev,
@@ -124,7 +118,6 @@ function UpdateNotification() {
         </div>
 
         <div className="update-body">
-          {/* Błąd */}
           {updateState.error && (
             <div className="update-error">
               <p>Nie udało się sprawdzić aktualizacji:</p>
@@ -133,7 +126,6 @@ function UpdateNotification() {
             </div>
           )}
 
-          {/* Aktualizacja dostępna */}
           {updateState.available && !updateState.downloading && !updateState.downloaded && (
             <div className="update-available">
               <p className="version-info">

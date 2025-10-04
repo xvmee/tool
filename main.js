@@ -8,7 +8,6 @@ let mainWindow;
 let tray;
 let systemStatsInterval;
 
-// Auto-updater będzie załadowany tylko w spakowanej aplikacji
 let autoUpdater = null;
 if (app.isPackaged) {
   try {
@@ -43,7 +42,6 @@ const createWindow = () => {
 
   mainWindow.loadFile('renderer/index.html');
 
-  // W DEV otwórz DevTools żeby zobaczyć błędy
   if (!app.isPackaged) {
     mainWindow.webContents.openDevTools();
   }
@@ -61,7 +59,6 @@ const createWindow = () => {
   setupIPC();
   createMenu();
   
-  // Sprawdź aktualizacje po uruchomieniu (tylko w spakowanej wersji)
   if (autoUpdater) {
     setTimeout(() => {
       checkForUpdates();
@@ -69,7 +66,6 @@ const createWindow = () => {
   }
 };
 
-// Helper do uruchamiania komend z renderera
 ipcMain.handle('run-command', async (event, command) => {
   return new Promise((resolve) => {
     exec(command, (error, stdout, stderr) => {
@@ -168,7 +164,6 @@ const setupIPC = () => {
     const freeMem = os.freemem();
     const usedMem = totalMem - freeMem;
     
-    // Better CPU usage calculation
     let idle = 0;
     let total = 0;
     
@@ -311,7 +306,6 @@ const setupIPC = () => {
   ipcMain.handle('kill-process', async (event, pid) => {
     return new Promise((resolve) => {
       if (process.platform === 'win32') {
-        // Użyj zarówno taskkill jak i wmic dla pewności
         const commands = [
           `taskkill /PID ${pid} /F`,
           `wmic process where ProcessId=${pid} delete`
@@ -319,7 +313,6 @@ const setupIPC = () => {
         
         exec(commands[0], (error) => {
           if (error) {
-            // Spróbuj alternatywną metodę
             exec(commands[1], (err2) => {
               if (err2) {
                 resolve({ success: false, error: 'Nie można zakończyć procesu. Sprawdź uprawnienia administratora.' });
@@ -377,7 +370,6 @@ const setupIPC = () => {
   ipcMain.handle('get-startup-apps', async () => {
     return new Promise((resolve) => {
       if (process.platform === 'win32') {
-        // Pobierz z rejestru i Task Scheduler
         const commands = [
           'reg query "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"',
           'reg query "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"',
@@ -387,7 +379,6 @@ const setupIPC = () => {
         let apps = [];
         let completed = 0;
         
-        // Registry - HKCU
         exec(commands[0], (error, stdout) => {
           if (!error) {
             const lines = stdout.split('\n').filter(line => line.includes('REG_SZ'));
@@ -409,7 +400,6 @@ const setupIPC = () => {
           if (completed === 2) resolve(apps);
         });
         
-        // Registry - HKLM
         exec(commands[1], (error, stdout) => {
           if (!error) {
             const lines = stdout.split('\n').filter(line => line.includes('REG_SZ'));
@@ -527,31 +517,22 @@ const setupIPC = () => {
     return mainWindow ? mainWindow.isMaximized() : false;
   });
 
-  // FPS Boost - optymalizacja GPU i CPU dla gier z wyborem aplikacji
   ipcMain.handle('fps-boost', async (event, selectedGame) => {
     return new Promise((resolve) => {
       if (process.platform === 'win32') {
         const commands = [
-          // Ustaw HIGH priority dla wybranej gry
           selectedGame ? `wmic process where name="${selectedGame}" CALL setpriority "high priority"` : '',
-          // Wyłącz Xbox Game Bar
           'reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR" /v AppCaptureEnabled /t REG_DWORD /d 0 /f',
           'reg add "HKCU\\System\\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f',
-          // Ustaw wysoką wydajność GPU - High Performance
           'powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c',
-          // Wyłącz fullscreen optimization globalnie
           'reg add "HKCU\\System\\GameConfigStore" /v GameDVR_FSEBehaviorMode /t REG_DWORD /d 2 /f',
           'reg add "HKCU\\System\\GameConfigStore" /v GameDVR_HonorUserFSEBehaviorMode /t REG_DWORD /d 1 /f',
-          // Ustaw maksymalny priorytet GPU dla gier
           'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games" /v "GPU Priority" /t REG_DWORD /d 8 /f',
           'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games" /v "Scheduling Category" /t REG_SZ /d "High" /f',
-          // Ustaw priorytet CPU dla gier
           'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games" /v Priority /t REG_DWORD /d 6 /f',
           'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games" /v "SFIO Priority" /t REG_SZ /d "High" /f',
-          // Wyłącz Game Mode conflicts
           'reg add "HKCU\\Software\\Microsoft\\GameBar" /v AllowAutoGameMode /t REG_DWORD /d 0 /f',
           'reg add "HKCU\\Software\\Microsoft\\GameBar" /v AutoGameModeEnabled /t REG_DWORD /d 0 /f',
-          // Optymalizacja timera Windows dla lepszego FPS
           'bcdedit /set useplatformclock true',
           'bcdedit /set disabledynamictick yes'
         ].filter(Boolean).join(' & ');
@@ -579,7 +560,6 @@ const setupIPC = () => {
     });
   });
 
-  // Get running games/applications
   ipcMain.handle('get-running-games', async () => {
     return new Promise((resolve) => {
       if (process.platform === 'win32') {
@@ -629,16 +609,12 @@ const setupIPC = () => {
     });
   });
 
-  // Game Mode - zabija niepotrzebne procesy z wykluczeniem wybranej gry
   ipcMain.handle('enable-game-mode', async (event, excludeProcess) => {
     return new Promise((resolve) => {
       if (process.platform === 'win32') {
         const processesToKill = [
           'OneDrive.exe',
           'Teams.exe',
-          // 'Spotify.exe',  // Zachowaj - dobry do grania
-          // 'SpotifyWebHelper.exe',
-          // 'Discord.exe',  // Zachowaj - komunikacja
           'chrome.exe',
           'msedge.exe',
           'firefox.exe',
@@ -660,7 +636,6 @@ const setupIPC = () => {
           'AdobeCollabSync.exe'
         ];
         
-        // Exclude selected game process
         const toKill = excludeProcess 
           ? processesToKill.filter(p => !excludeProcess.toLowerCase().includes(p.toLowerCase().replace('.exe', '')))
           : processesToKill;
@@ -669,27 +644,20 @@ const setupIPC = () => {
         const killCommands = toKill.map(proc => `taskkill /F /IM ${proc} /T 2>nul`).join(' & ');
         
         exec(killCommands, (error) => {
-          // Count killed processes
           exec('tasklist', (err, stdout) => {
             toKill.forEach(proc => {
               if (!stdout.includes(proc)) killed++;
             });
             
-            // Additional optimization: Set process priority and performance
             const optimizeCommands = [
-              // Boost system responsiveness for games
               'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 0 /f 2>nul',
-              // Set GPU priority for games
               'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games" /v "GPU Priority" /t REG_DWORD /d 8 /f 2>nul',
               'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games" /v Priority /t REG_DWORD /d 6 /f 2>nul',
               'reg add "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games" /v "Scheduling Category" /t REG_SZ /d High /f 2>nul',
-              // Disable Windows Search indexing temporarily
               'sc config "WSearch" start=disabled 2>nul',
               'net stop "WSearch" 2>nul',
-              // Disable Superfetch/Prefetch
               'sc config "SysMain" start=disabled 2>nul',
               'net stop "SysMain" 2>nul',
-              // Disable Windows Update temporarily
               'sc config "wuauserv" start=disabled 2>nul',
               'net stop "wuauserv" 2>nul'
             ].join(' & ');
@@ -720,18 +688,13 @@ const setupIPC = () => {
     });
   });
 
-  // Network Boost - optymalizacja połączenia
   ipcMain.handle('network-boost', async () => {
     return new Promise((resolve) => {
       if (process.platform === 'win32') {
         const commands = [
-          // Flush DNS
           'ipconfig /flushdns',
-          // Reset Winsock
           'netsh winsock reset',
-          // Optymalizacja TCP
           'netsh int tcp set global autotuninglevel=normal',
-          // Wyłącz throttling
           'netsh int tcp set global chimney=enabled',
           'netsh int tcp set global rss=enabled',
           'netsh int tcp set global netdma=enabled'
@@ -756,7 +719,6 @@ const setupIPC = () => {
     });
   });
 
-  // GPU Optimization - czyszczenie shader cache
   ipcMain.handle('optimize-gpu', async () => {
     return new Promise((resolve) => {
       if (process.platform === 'win32') {
@@ -787,7 +749,6 @@ const setupIPC = () => {
     });
   });
 
-  // Disable Telemetry
   ipcMain.handle('disable-telemetry', async () => {
     return new Promise((resolve) => {
       if (process.platform === 'win32') {
@@ -818,7 +779,6 @@ const setupIPC = () => {
   });
 };
 
-// Zaawansowane czyszczenie - skanowanie
 ipcMain.handle('scan-for-cleanup', async () => {
   return new Promise((resolve) => {
     if (process.platform !== 'win32') {
@@ -873,7 +833,6 @@ ipcMain.handle('scan-for-cleanup', async () => {
   });
 });
 
-// Zaawansowane czyszczenie - wykonanie
 ipcMain.handle('perform-advanced-cleanup', async (event, itemsToClean) => {
   return new Promise((resolve) => {
     if (process.platform !== 'win32') {
@@ -958,11 +917,9 @@ const showAboutDialog = () => {
   });
 };
 
-// Auto-updater: Sprawdzanie aktualizacji
 const checkForUpdates = () => {
   if (!mainWindow || !autoUpdater) return;
   
-  // Nie sprawdzaj aktualizacji w trybie dev (gdy aplikacja nie jest spakowana)
   if (!app.isPackaged) {
     console.log('Skip checkForUpdates - DEV MODE (aplikacja nie spakowana)');
     return;
@@ -976,7 +933,6 @@ const checkForUpdates = () => {
   }
 };
 
-// Auto-updater event handlers - tylko jeśli autoUpdater istnieje
 if (autoUpdater) {
   autoUpdater.on('checking-for-update', () => {
     console.log('Checking for update...');
@@ -1032,7 +988,6 @@ if (autoUpdater) {
   });
 }
 
-// IPC handlers dla auto-updater - tylko jeśli autoUpdater istnieje
 if (autoUpdater) {
   ipcMain.on('download-update', () => {
     console.log('Starting update download...');

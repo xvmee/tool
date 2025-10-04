@@ -52,7 +52,6 @@ function AdvancedCleaner({ addNotification }) {
         result.cleaned.forEach((item, i) => {
           setTimeout(() => addNotification(item, 'success'), (i + 1) * 200);
         });
-        // Reset scan results
         setScanResults(null);
       } else {
         addNotification('Błąd podczas czyszczenia', 'error');
@@ -80,84 +79,72 @@ function AdvancedCleaner({ addNotification }) {
     {
       id: 'tempFiles',
       name: 'Pliki Tymczasowe',
-      icon: '📁',
       description: 'Pliki tymczasowe Windows i użytkownika',
       risk: 'safe'
     },
     {
       id: 'browserCache',
       name: 'Cache Przeglądarek',
-      icon: '🌐',
       description: 'Chrome, Edge, Firefox cache i cookies',
       risk: 'safe'
     },
     {
       id: 'recyclingBin',
       name: 'Kosz',
-      icon: '🗑️',
       description: 'Zawartość kosza systemowego',
       risk: 'safe'
     },
     {
       id: 'windowsLogs',
       name: 'Logi Windows',
-      icon: '📋',
       description: 'Pliki logów systemowych',
       risk: 'safe'
     },
     {
       id: 'thumbnails',
       name: 'Miniatury',
-      icon: '🖼️',
       description: 'Cache miniatur obrazów',
       risk: 'safe'
     },
     {
       id: 'prefetch',
       name: 'Prefetch',
-      icon: '⚡',
       description: 'Pliki przyspieszające uruchamianie',
       risk: 'moderate'
     },
     {
       id: 'crashDumps',
       name: 'Crash Dumps',
-      icon: '💥',
       description: 'Raporty awarii systemu',
       risk: 'safe'
     },
     {
       id: 'downloadedInstalls',
       name: 'Pobrane Instalatory',
-      icon: '📦',
       description: 'Pliki instalacyjne w Downloads',
       risk: 'moderate'
     },
     {
       id: 'oldWindowsUpdates',
       name: 'Stare Aktualizacje',
-      icon: '🔄',
       description: 'Backup starych aktualizacji Windows',
       risk: 'safe'
     },
     {
       id: 'windowsErrorReports',
       name: 'Raporty Błędów',
-      icon: '⚠️',
       description: 'Windows Error Reporting',
       risk: 'safe'
     },
     {
       id: 'deliveryOptimization',
       name: 'Delivery Optimization',
-      icon: '📡',
       description: 'Cache Windows Update P2P',
       risk: 'safe'
     },
     {
       id: 'directXCache',
       name: 'DirectX Shader Cache',
-      icon: '🎮',
       description: 'Cache shaderów DirectX',
       risk: 'moderate'
     }
@@ -166,7 +153,7 @@ function AdvancedCleaner({ addNotification }) {
   return (
     <div className="advanced-cleaner">
       <div className="cleaner-header">
-        <h2>🧹 Zaawansowane Czyszczenie</h2>
+        <h2>Zaawansowane Czyszczenie</h2>
         <p>Profesjonalne czyszczenie systemu z pełną kontrolą</p>
       </div>
 
@@ -176,7 +163,7 @@ function AdvancedCleaner({ addNotification }) {
           onClick={scanForCleanup}
           disabled={isScanning || isCleaning}
         >
-          {isScanning ? '⏳ Skanowanie...' : '🔍 Skanuj System'}
+          {isScanning ? 'Skanowanie...' : 'Skanuj System'}
         </button>
 
         {scanResults && (
@@ -185,13 +172,13 @@ function AdvancedCleaner({ addNotification }) {
               className="btn-secondary"
               onClick={() => toggleAll(true)}
             >
-              ✓ Zaznacz Wszystko
+              Zaznacz Wszystko
             </button>
             <button 
               className="btn-secondary"
               onClick={() => toggleAll(false)}
             >
-              ✗ Odznacz Wszystko
+              Odznacz Wszystko
             </button>
           </>
         )}
@@ -200,14 +187,12 @@ function AdvancedCleaner({ addNotification }) {
       {scanResults && (
         <div className="scan-summary">
           <div className="summary-card">
-            <div className="summary-icon">💾</div>
             <div className="summary-info">
               <h3>{Object.values(scanResults).reduce((sum, item) => sum + item.sizeMB, 0).toFixed(2)} MB</h3>
               <p>Całkowity rozmiar do wyczyszczenia</p>
             </div>
           </div>
           <div className="summary-card">
-            <div className="summary-icon">📊</div>
             <div className="summary-info">
               <h3>{Object.values(scanResults).reduce((sum, item) => sum + item.count, 0)}</h3>
               <p>Plików do usunięcia</p>
@@ -235,13 +220,11 @@ function AdvancedCleaner({ addNotification }) {
                 />
               </div>
               
-              <div className="cleanup-icon">{category.icon}</div>
-              
               <div className="cleanup-info">
                 <h4>{category.name}</h4>
                 <p>{category.description}</p>
                 {category.risk === 'moderate' && (
-                  <span className="risk-badge">⚠️ Średnie ryzyko</span>
+                  <span className="risk-badge">Średnie ryzyko</span>
                 )}
               </div>
               
@@ -263,7 +246,7 @@ function AdvancedCleaner({ addNotification }) {
             onClick={performCleanup}
             disabled={isCleaning || Object.values(selectedItems).every(v => !v)}
           >
-            {isCleaning ? '🧹 Czyszczenie...' : '🧹 Wyczyść Zaznaczone'}
+            {isCleaning ? 'Czyszczenie...' : 'Wyczyść Zaznaczone'}
           </button>
         </div>
       )}

@@ -23,7 +23,6 @@ function StartupManager({ apps, onRefresh }) {
           setDisabledApps([...disabledApps, app.id]);
         }
         
-        // Refresh the list after a short delay
         setTimeout(() => onRefresh(), 500);
       } else {
         alert(result.error || 'Nie udało się zmienić ustawień autostartu');
@@ -40,7 +39,7 @@ function StartupManager({ apps, onRefresh }) {
     return (
       <section className="settings-section">
         <div className="section-header">
-          <h2>🚀 Programy Autostartu <span className="beta-badge">BETA</span></h2>
+          <h2>Programy Autostartu <span className="beta-badge">BETA</span></h2>
           <button className="btn-icon" onClick={onRefresh} title="Odśwież">
             ↻
           </button>
@@ -53,7 +52,7 @@ function StartupManager({ apps, onRefresh }) {
   return (
     <section className="settings-section">
       <div className="section-header">
-        <h2>🚀 Programy Autostartu ({apps.length}) <span className="beta-badge">BETA</span></h2>
+        <h2>Programy Autostartu ({apps.length}) <span className="beta-badge">BETA</span></h2>
         <button className="btn-icon" onClick={onRefresh} title="Odśwież">
           ↻
         </button>

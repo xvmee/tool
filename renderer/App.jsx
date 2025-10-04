@@ -14,7 +14,6 @@ function App() {
   });
 
   useEffect(() => {
-    // Simulate loading time
     const loadingTimer = setTimeout(() => {
       setIsLoading(false);
     }, 3000);
@@ -157,7 +156,6 @@ function App() {
     }
   };
 
-  // Show loading screen while app initializes
   if (isLoading) {
     return <LoadingScreen />;
   }

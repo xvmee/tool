@@ -77,7 +77,7 @@ function Monitor({ systemStats, addNotification }) {
       <div className="monitor-grid">
         <div className="monitor-card cpu-card">
           <div className="card-header">
-            <h3>🖥️ Procesor</h3>
+            <h3>Procesor</h3>
             <span className={`status-badge ${getStatusColor(parseFloat(systemStats.cpu.usage))}`}>
               {getStatusText(parseFloat(systemStats.cpu.usage))}
             </span>
@@ -108,7 +108,7 @@ function Monitor({ systemStats, addNotification }) {
 
         <div className="monitor-card memory-card">
           <div className="card-header">
-            <h3>💾 Pamięć RAM</h3>
+            <h3>Pamięć RAM</h3>
             <span className={`status-badge ${getStatusColor(parseFloat(systemStats.memory.usagePercent))}`}>
               {getStatusText(parseFloat(systemStats.memory.usagePercent))}
             </span>
@@ -140,7 +140,7 @@ function Monitor({ systemStats, addNotification }) {
 
       <div className="charts-section">
         <div className="chart-card">
-          <h3>📊 Historia Użycia CPU</h3>
+          <h3>Historia Użycia CPU</h3>
           <div className="chart-container">
             <div className="chart-bars">
               {history.cpu.map((value, index) => (
@@ -160,7 +160,7 @@ function Monitor({ systemStats, addNotification }) {
         </div>
 
         <div className="chart-card">
-          <h3>📊 Historia Użycia RAM</h3>
+          <h3>Historia Użycia RAM</h3>
           <div className="chart-container">
             <div className="chart-bars">
               {history.memory.map((value, index) => (

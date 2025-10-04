@@ -46,7 +46,6 @@ function Dashboard({ systemStats, onOptimizeRAM, onClearCache, addNotification }
     
     addNotification('Zamykanie nieużywanych procesów...', 'info');
     
-    // Lista procesów do zamknięcia (bezpieczne do zakończenia)
     const processesToKill = [
       'chrome.exe',
       'msedge.exe', 
@@ -61,7 +60,6 @@ function Dashboard({ systemStats, onOptimizeRAM, onClearCache, addNotification }
     
     for (const procName of processesToKill) {
       try {
-        // Znajdź proces po nazwie
         const proc = processes.find(p => p.name.toLowerCase() === procName.toLowerCase());
         if (proc) {
           const result = await window.electronAPI.killProcess(proc.pid);
@@ -86,7 +84,6 @@ function Dashboard({ systemStats, onOptimizeRAM, onClearCache, addNotification }
 
   const handleManageStartup = () => {
     addNotification('Przechodzenie do zarządzania autostartem...', 'info');
-    // Emit event to navigate to settings
     window.electronAPI.onOpenSettings(() => {});
     setTimeout(() => {
       const event = new Event('open-settings');
@@ -129,7 +126,6 @@ function Dashboard({ systemStats, onOptimizeRAM, onClearCache, addNotification }
       <div className="stats-grid">
         <StatCard
           title="Procesor"
-          icon="🖥️"
           value={`${systemStats.cpu.usage}%`}
           subtitle={systemStats.cpu.model}
           color="purple"
@@ -137,7 +133,6 @@ function Dashboard({ systemStats, onOptimizeRAM, onClearCache, addNotification }
         />
         <StatCard
           title="Pamięć RAM"
-          icon="💾"
           value={`${systemStats.memory.used} GB`}
           subtitle={`z ${systemStats.memory.total} GB`}
           color="blue"
@@ -145,7 +140,6 @@ function Dashboard({ systemStats, onOptimizeRAM, onClearCache, addNotification }
         />
         <StatCard
           title="Dysk"
-          icon="💿"
           value={diskUsage.length > 0 ? `${diskUsage[0].usagePercent}%` : 'N/A'}
           subtitle={diskUsage.length > 0 ? `${diskUsage[0].used} / ${diskUsage[0].total} GB` : 'Ładowanie...'}
           color="pink"
@@ -153,7 +147,6 @@ function Dashboard({ systemStats, onOptimizeRAM, onClearCache, addNotification }
         />
         <StatCard
           title="Procesy"
-          icon="⚙️"
           value={processes.length}
           subtitle="Aktywnych procesów"
           color="green"
@@ -165,7 +158,6 @@ function Dashboard({ systemStats, onOptimizeRAM, onClearCache, addNotification }
         <ActionButton
           title="Optymalizuj RAM"
           description="Zwolnij pamięć i przyspiesz system"
-          icon="🚀"
           color="purple"
           onClick={handleOptimize}
           isLoading={isOptimizing}
@@ -174,7 +166,6 @@ function Dashboard({ systemStats, onOptimizeRAM, onClearCache, addNotification }
         <ActionButton
           title="Wyczyść Cache"
           description="Usuń tymczasowe pliki systemowe"
-          icon="🧹"
           color="blue"
           onClick={handleClear}
           isLoading={isClearing}
@@ -183,7 +174,6 @@ function Dashboard({ systemStats, onOptimizeRAM, onClearCache, addNotification }
         <ActionButton
           title="Zamknij Procesy"
           description="Zakończ nieużywane programy"
-          icon="⛔"
           color="pink"
           onClick={handleKillProcesses}
           gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
@@ -191,7 +181,6 @@ function Dashboard({ systemStats, onOptimizeRAM, onClearCache, addNotification }
         <ActionButton
           title="Zarządzaj Autostartem"
           description="Kontroluj programy uruchamiane przy starcie"
-          icon="⚡"
           color="green"
           onClick={handleManageStartup}
           gradient="linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)"

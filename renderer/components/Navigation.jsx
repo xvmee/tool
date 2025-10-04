@@ -1,10 +1,10 @@
 function Navigation({ currentView, onNavigate, systemStats }) {
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: '🏠' },
-    { id: 'gameboost', label: 'Game Boost', icon: '⚡' },
-    { id: 'cleaner', label: 'Czyszczenie', icon: '🧹' },
-    { id: 'processes', label: 'Procesy', icon: '⚙️' },
-    { id: 'settings', label: 'Ustawienia', icon: '⚙️' }
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'gameboost', label: 'Game Boost' },
+    { id: 'cleaner', label: 'Czyszczenie' },
+    { id: 'processes', label: 'Procesy' },
+    { id: 'settings', label: 'Ustawienia' }
   ];
 
   return (
@@ -25,7 +25,6 @@ function Navigation({ currentView, onNavigate, systemStats }) {
             className={`nav-item ${currentView === item.id ? 'active' : ''}`}
             onClick={() => onNavigate(item.id)}
           >
-            <span className="nav-icon">{item.icon}</span>
             <span className="nav-label">{item.label}</span>
             {currentView === item.id && <div className="nav-indicator"></div>}
           </button>
@@ -36,7 +35,6 @@ function Navigation({ currentView, onNavigate, systemStats }) {
         <div className="nav-stats">
           <div className="mini-stat">
             <div className="mini-stat-header">
-              <span className="mini-stat-icon">🖥️</span>
               <span className="mini-stat-label">CPU</span>
             </div>
             <div className="mini-stat-bar">
@@ -50,7 +48,6 @@ function Navigation({ currentView, onNavigate, systemStats }) {
 
           <div className="mini-stat">
             <div className="mini-stat-header">
-              <span className="mini-stat-icon">💾</span>
               <span className="mini-stat-label">RAM</span>
             </div>
             <div className="mini-stat-bar">

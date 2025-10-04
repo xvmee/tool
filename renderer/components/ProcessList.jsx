@@ -93,7 +93,7 @@ function ProcessList({ addNotification }) {
         <div className="process-controls">
           <input 
             type="text"
-            placeholder="🔍 Szukaj procesów..."
+            placeholder="Szukaj procesów..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="process-search"
