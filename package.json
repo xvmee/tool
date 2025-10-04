@@ -4,13 +4,13 @@
   "description": "Advanced System Optimization & Gaming Boost - tooltech.pl",
   "main": "main.js",
   "author": "tooltech.pl <contact@tooltech.pl>",
-  "homepage": "https://github.com/tooltech/Tool#readme",
+  "homepage": "https://github.com/xvmee/tool#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tooltech/Tool.git"
+    "url": "https://github.com/xvmee/tool.git"
   },
   "bugs": {
-    "url": "https://github.com/tooltech/Tool/issues"
+    "url": "https://github.com/xvmee/tool/issues"
   },
   "license": "MIT",
   "scripts": {
@@ -65,8 +65,8 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "tooltech",
-      "repo": "Tool",
+      "owner": "xvmee",
+      "repo": "tool",
       "releaseType": "release"
     }
   },
