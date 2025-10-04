@@ -40,10 +40,10 @@ function Navigation({ currentView, onNavigate, systemStats }) {
               <span className="mini-stat-label">CPU</span>
             </div>
             <div className="mini-stat-bar">
-              <div>
+              <div
                 className="mini-stat-fill cpu-fill"
                 style={{ width: `${systemStats.cpu.usage}%` }}
-              </div>
+              ></div>
             </div>
             <span className="mini-stat-value">{systemStats.cpu.usage}%</span>
           </div>
@@ -54,10 +54,10 @@ function Navigation({ currentView, onNavigate, systemStats }) {
               <span className="mini-stat-label">RAM</span>
             </div>
             <div className="mini-stat-bar">
-              <div>
+              <div
                 className="mini-stat-fill ram-fill"
                 style={{ width: `${systemStats.memory.usagePercent}%` }}
-              </div>
+              ></div>
             </div>
             <span className="mini-stat-value">{systemStats.memory.usagePercent}%</span>
           </div>
@@ -65,7 +65,7 @@ function Navigation({ currentView, onNavigate, systemStats }) {
       )}
 
       <div className="nav-footer">
-        <p className="version-text">v2.2.2</p>
+        <p className="version-text">v2.3.0</p>
         <p className="copyright">© 2025 tooltech.pl</p>
       </div>
     </nav>

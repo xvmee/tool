@@ -1,6 +1,6 @@
 {
   "name": "tool",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "description": "Advanced System Optimization & Gaming Boost - tooltech.pl",
   "main": "main.js",
   "author": "tooltech.pl <contact@tooltech.pl>",
@@ -29,6 +29,9 @@
       "output": "dist",
       "buildResources": "assets"
     },
+    "asarUnpack": [
+      "renderer/libs/**/*"
+    ],
     "files": [
       "main.js",
       "preload.js",
