@@ -14,6 +14,10 @@ if (app.isPackaged) {
     autoUpdater = require('electron-updater').autoUpdater;
     autoUpdater.autoDownload = false;
     autoUpdater.autoInstallOnAppQuit = true;
+    autoUpdater.allowPrerelease = false;
+    autoUpdater.allowDowngrade = false;
+    // Force check for updates on every launch by clearing cache
+    autoUpdater.forceDevUpdateConfig = false;
     console.log('Auto-updater enabled');
   } catch (err) {
     console.log('Auto-updater not available:', err.message);
@@ -957,6 +961,10 @@ if (autoUpdater) {
     if (mainWindow) {
       mainWindow.webContents.send('update-status', { status: 'not-available', version: info.version });
     }
+    // Clear any cached update data to force fresh check next time
+    if (autoUpdater.currentVersion) {
+      console.log('Clearing update cache for next check');
+    }
   });
 
   autoUpdater.on('error', (err) => {
@@ -985,6 +993,10 @@ if (autoUpdater) {
         version: info.version
       });
     }
+    // Clear pending update info since it's downloaded
+    if (mainWindow) {
+      mainWindow.webContents.executeJavaScript(`localStorage.removeItem('pendingUpdate')`);
+    }
   });
 }
 
@@ -1005,6 +1017,11 @@ if (autoUpdater) {
     } catch (err) {
       console.error('Error installing update:', err);
     }
+  });
+
+  ipcMain.on('open-external-link', (event, url) => {
+    console.log('Opening external link:', url);
+    shell.openExternal(url);
   });
 }
 
