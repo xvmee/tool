@@ -1,7 +1,7 @@
 <div align="center">
   <img src="assets/Tool.png" alt="Tool Logo" width="150" />
   
-  # Tool 1.0.3v
+  # Tool 1.0.6v
 
   ![Tool Logo](https://img.shields.io/badge/Tool-v1.0.3-purple?style=for-the-badge)
   ![Electron](https://img.shields.io/badge/Electron-27.0-blue?style=for-the-badge)
