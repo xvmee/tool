@@ -83,7 +83,7 @@ function Navigation({ currentView, onNavigate, systemStats }) {
       )}
 
       <div className="nav-footer">
-        <p className="version-text">v1.0.2</p>
+        <p className="version-text">v1.0.3</p>
         <p className="copyright">© 2025 tooltech.pl</p>
       </div>
     </nav>
