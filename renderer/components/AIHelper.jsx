@@ -27,14 +27,16 @@ function AIHelper() {
       const diskUsage = await window.electronAPI.getDiskUsage();
       const processes = await window.electronAPI.getProcesses();
       
-      setSystemStats({
+      const combinedStats = {
         ...stats,
         disks: diskUsage,
-        processCount: processes.length,
-        topProcesses: processes.slice(0, 5)
-      });
+        processCount: processes?.length || 0,
+        topProcesses: processes?.slice(0, 5) || []
+      };
+      
+      setSystemStats(combinedStats);
     } catch (error) {
-      console.error('Error fetching system stats:', error);
+      console.error('[AIHelper] Error fetching system stats:', error);
     }
   };
 
@@ -50,8 +52,6 @@ function AIHelper() {
   };
 
   const SYSTEM_PROMPT = `Nazywasz sie ToolAI i jesteś AI Asystentem - profesjonalnym asystentem technicznym specjalizującym się w pomocy użytkownikom komputerów.
-
-WAŻNE: Masz dostęp do AKTUALNYCH STATYSTYK SYSTEMU użytkownika. Wykorzystuj je w odpowiedziach!
 
 TWOJE KOMPETENCJE:
 - Diagnozowanie i rozwiązywanie problemów z systemem Windows
@@ -83,10 +83,19 @@ ZASADY ODPOWIEDZI:
 STYL ODPOWIEDZI:
 - Mów po polsku, w przyjazny i pomocny sposób
 - Bądź konkretny i techniczny, ale zrozumiały
-- ZAWSZE odwołuj się do aktualnych statystyk systemu jeśli są dostępne
 - Podawaj rozwiązania krok po kroku
-- Jeśli widzisz problemy w statystykach (np. wysokie CPU), wskaż je
-- Jeśli pytanie jest poza Twoimi kompetencjami, grzecznie odmów i zasugeruj zadanie pytania związanego z komputerem
+- NIE wspominaj o statystykach systemu w zwykłych powitaniach
+- UŻYWAJ statystyk TYLKO gdy użytkownik pyta o wydajność, problemy, zużycie zasobów
+- Jeśli pytanie jest poza Twoimi kompetencjami, grzecznie odmów
+
+KIEDY UŻYWAĆ STATYSTYK:
+✅ "Dlaczego mam wysokie zużycie CPU?" → Cytuj CPU usage
+✅ "Czy mam wystarczająco RAM?" → Cytuj RAM usage
+✅ "Co zajmuje miejsce na dysku?" → Cytuj disk usage
+✅ "Mój komputer jest wolny" → Analizuj wszystkie statystyki
+❌ "Witam" → Przywitaj się normalnie BEZ statystyk
+❌ "Jak zainstalować program?" → Odpowiedz BEZ wspominania o statystykach
+❌ Zwykłe pytania → NIE cytuj statystyk jeśli nie są potrzebne
 
 WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale mogę pomagać tylko w kwestiach związanych z komputerami i technologią. Czy masz jakieś pytanie dotyczące systemu Windows, wydajności komputera lub problemów technicznych? 💻"`;
 
@@ -102,48 +111,28 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
     try {
       await fetchSystemStats();
       
-      const systemContext = systemStats ? `
+      let systemContext = '';
+      
+      if (systemStats && systemStats.cpu && systemStats.memory) {
+        const cpuUsage = typeof systemStats.cpu.usage === 'number' ? systemStats.cpu.usage.toFixed(1) : systemStats.cpu.usage;
+        const ramUsage = typeof systemStats.memory.usedPercentage === 'number' ? systemStats.memory.usedPercentage.toFixed(1) : systemStats.memory.usedPercentage;
+        
+        systemContext = `
 
-═══════════════════════════════════════════════════════
-📊 AKTUALNE STATYSTYKI SYSTEMU UŻYTKOWNIKA
-═══════════════════════════════════════════════════════
-
-🖥️ PROCESOR (CPU):
-   • Zużycie: ${systemStats.cpu.usage.toFixed(1)}%
-   • Temperatura: ${systemStats.cpu.temperature}°C
-   • Model: ${systemStats.cpu.model}
-   • Rdzenie: ${systemStats.cpu.cores}
-
-💾 PAMIĘĆ RAM:
-   • Zużycie: ${systemStats.memory.usedPercentage.toFixed(1)}%
-   • Użyta: ${systemStats.memory.used}
-   • Całkowita: ${systemStats.memory.total}
-   • Dostępna: ${systemStats.memory.available}
-
-💿 DYSKI:
-${systemStats.disks ? systemStats.disks.map(d => `   • ${d.mount}: ${d.usedPercentage.toFixed(1)}% użyte (${d.used} / ${d.size})`).join('\n') : '   • Brak danych'}
-
-⚙️ PROCESY:
-   • Liczba procesów: ${systemStats.processCount || 'N/A'}
-   • Top 5 procesów wg RAM:
-${systemStats.topProcesses ? systemStats.topProcesses.map((p, i) => `     ${i + 1}. ${p.name} - ${p.memory}`).join('\n') : '     • Brak danych'}
-
-🖼️ SYSTEM:
-   • Platforma: ${systemStats.platform}
-   • Architektura: ${systemStats.arch}
-   • Czas działania: ${Math.floor(systemStats.uptime / 3600)} godz. ${Math.floor((systemStats.uptime % 3600) / 60)} min
-
-═══════════════════════════════════════════════════════
-
-⚠️ WAŻNE INSTRUKCJE:
-1. ZAWSZE odwołuj się do powyższych statystyk w odpowiedzi
-2. Jeśli użytkownik pyta o wydajność/problemy, CYTUJ konkretne wartości
-3. Przykład: "Widzę, że Twoje zużycie CPU wynosi ${systemStats.cpu.usage.toFixed(1)}%..."
-4. Jeśli widzisz niepokojące wartości (CPU >80%, RAM >90%), WSKAŻ to!
-5. Sugeruj konkretne rozwiązania oparte na RZECZYWISTYCH danych
-
-` : '\n⚠️ UWAGA: Statystyki systemu są obecnie niedostępne. Odpowiadaj ogólnie.\n';
-
+[DOSTĘPNE STATYSTYKI SYSTEMU - Używaj TYLKO gdy pytanie dotyczy wydajności/problemów]
+CPU: ${cpuUsage}% | Temp: ${systemStats.cpu.temperature}°C | ${systemStats.cpu.model}
+RAM: ${ramUsage}% (${systemStats.memory.used}/${systemStats.memory.total})
+Dyski: ${systemStats.disks && systemStats.disks.length > 0 ? systemStats.disks.map(d => {
+  const diskUsage = typeof d.usedPercentage === 'number' ? d.usedPercentage.toFixed(1) : d.usedPercentage;
+  return `${d.mount}:${diskUsage}%`;
+}).join(' ') : 'N/A'}
+Procesy: ${systemStats.processCount}
+System: ${systemStats.platform} ${systemStats.arch}
+`;
+      } else {
+        systemContext = '';
+      }
+      
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -165,10 +154,13 @@ ${systemStats.topProcesses ? systemStats.topProcesses.map((p, i) => `     ${i + 
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[AIHelper] API Error:', response.status, errorText);
         throw new Error(`API Error: ${response.status}`);
       }
 
       const data = await response.json();
+      
       const assistantMessage = {
         role: 'assistant',
         content: data.choices[0].message.content
@@ -176,7 +168,7 @@ ${systemStats.topProcesses ? systemStats.topProcesses.map((p, i) => `     ${i + 
 
       setMessages(prev => [...prev, assistantMessage]);
     } catch (err) {
-      console.error('AI Helper Error:', err);
+      console.error('[AIHelper] Error:', err);
       setError('Nie udało się uzyskać odpowiedzi. Sprawdź połączenie internetowe.');
       setMessages(prev => [...prev, {
         role: 'assistant',
