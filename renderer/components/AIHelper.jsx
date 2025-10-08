@@ -2,12 +2,13 @@ function AIHelper() {
   const [messages, setMessages] = React.useState([
     {
       role: 'assistant',
-      content: 'Witaj. Jestem asystentem technicznym Tool. Mogę pomóc w kwestiach związanych z systemem Windows, optymalizacją wydajności i rozwiązywaniem problemów. W czym mogę pomóc?'
+      content: 'Witaj. Jestem asystentem technicznym Tool. Mogę pomóc w kwestiach związanych z systemem Windows, optymalizacją wydajności i rozwiązywaniem problemów. Mam dostęp do statystyk Twojego systemu, więc mogę udzielić spersonalizowanych porad. W czym mogę pomóc?'
     }
   ]);
   const [input, setInput] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
+  const [systemStats, setSystemStats] = React.useState(null);
   const messagesEndRef = React.useRef(null);
 
   const scrollToBottom = () => {
@@ -18,6 +19,31 @@ function AIHelper() {
     scrollToBottom();
   }, [messages]);
 
+  const fetchSystemStats = async () => {
+    if (!window.electronAPI) return;
+    
+    try {
+      const stats = await window.electronAPI.getSystemStats();
+      const diskUsage = await window.electronAPI.getDiskUsage();
+      const processes = await window.electronAPI.getProcesses();
+      
+      setSystemStats({
+        ...stats,
+        disks: diskUsage,
+        processCount: processes.length,
+        topProcesses: processes.slice(0, 5)
+      });
+    } catch (error) {
+      console.error('Error fetching system stats:', error);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchSystemStats();
+    const interval = setInterval(fetchSystemStats, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const getApiKey = () => {
     const encoded = 'Z3NrXzFrb3ZidW1YMVRpVEx6TXV6RDRBV0dkeWIzRll2MkhQaFVPZndiM3p6ZTdBMTY2SEljTjI=';
     return atob(encoded);
@@ -25,9 +51,11 @@ function AIHelper() {
 
   const SYSTEM_PROMPT = `Nazywasz sie ToolAI i jesteś AI Asystentem - profesjonalnym asystentem technicznym specjalizującym się w pomocy użytkownikom komputerów.
 
+WAŻNE: Masz dostęp do AKTUALNYCH STATYSTYK SYSTEMU użytkownika. Wykorzystuj je w odpowiedziach!
+
 TWOJE KOMPETENCJE:
 - Diagnozowanie i rozwiązywanie problemów z systemem Windows
-- Optymalizacja wydajności komputera
+- Optymalizacja wydajności komputera na podstawie RZECZYWISTYCH danych
 - Pomoc w konfiguracji systemu i oprogramowania
 - Rozwiązywanie błędów i konfliktów systemowych
 - Porady dotyczące bezpieczeństwa i ochrony danych
@@ -35,6 +63,7 @@ TWOJE KOMPETENCJE:
 - Wsparcie w kwestiach związanych z grami i wydajnością gaming
 - Czyszczenie systemu i konserwacja
 - Aktualizacje sterowników i oprogramowania
+- Analiza zużycia zasobów systemowych
 
 ZASADY ODPOWIEDZI:
 ✅ ODPOWIADAJ TYLKO na pytania związane z:
@@ -54,8 +83,9 @@ ZASADY ODPOWIEDZI:
 STYL ODPOWIEDZI:
 - Mów po polsku, w przyjazny i pomocny sposób
 - Bądź konkretny i techniczny, ale zrozumiały
-- Używaj emotikonów dla lepszej komunikacji
+- ZAWSZE odwołuj się do aktualnych statystyk systemu jeśli są dostępne
 - Podawaj rozwiązania krok po kroku
+- Jeśli widzisz problemy w statystykach (np. wysokie CPU), wskaż je
 - Jeśli pytanie jest poza Twoimi kompetencjami, grzecznie odmów i zasugeruj zadanie pytania związanego z komputerem
 
 WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale mogę pomagać tylko w kwestiach związanych z komputerami i technologią. Czy masz jakieś pytanie dotyczące systemu Windows, wydajności komputera lub problemów technicznych? 💻"`;
@@ -70,6 +100,50 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
     setError(null);
 
     try {
+      await fetchSystemStats();
+      
+      const systemContext = systemStats ? `
+
+═══════════════════════════════════════════════════════
+📊 AKTUALNE STATYSTYKI SYSTEMU UŻYTKOWNIKA
+═══════════════════════════════════════════════════════
+
+🖥️ PROCESOR (CPU):
+   • Zużycie: ${systemStats.cpu.usage.toFixed(1)}%
+   • Temperatura: ${systemStats.cpu.temperature}°C
+   • Model: ${systemStats.cpu.model}
+   • Rdzenie: ${systemStats.cpu.cores}
+
+💾 PAMIĘĆ RAM:
+   • Zużycie: ${systemStats.memory.usedPercentage.toFixed(1)}%
+   • Użyta: ${systemStats.memory.used}
+   • Całkowita: ${systemStats.memory.total}
+   • Dostępna: ${systemStats.memory.available}
+
+💿 DYSKI:
+${systemStats.disks ? systemStats.disks.map(d => `   • ${d.mount}: ${d.usedPercentage.toFixed(1)}% użyte (${d.used} / ${d.size})`).join('\n') : '   • Brak danych'}
+
+⚙️ PROCESY:
+   • Liczba procesów: ${systemStats.processCount || 'N/A'}
+   • Top 5 procesów wg RAM:
+${systemStats.topProcesses ? systemStats.topProcesses.map((p, i) => `     ${i + 1}. ${p.name} - ${p.memory}`).join('\n') : '     • Brak danych'}
+
+🖼️ SYSTEM:
+   • Platforma: ${systemStats.platform}
+   • Architektura: ${systemStats.arch}
+   • Czas działania: ${Math.floor(systemStats.uptime / 3600)} godz. ${Math.floor((systemStats.uptime % 3600) / 60)} min
+
+═══════════════════════════════════════════════════════
+
+⚠️ WAŻNE INSTRUKCJE:
+1. ZAWSZE odwołuj się do powyższych statystyk w odpowiedzi
+2. Jeśli użytkownik pyta o wydajność/problemy, CYTUJ konkretne wartości
+3. Przykład: "Widzę, że Twoje zużycie CPU wynosi ${systemStats.cpu.usage.toFixed(1)}%..."
+4. Jeśli widzisz niepokojące wartości (CPU >80%, RAM >90%), WSKAŻ to!
+5. Sugeruj konkretne rozwiązania oparte na RZECZYWISTYCH danych
+
+` : '\n⚠️ UWAGA: Statystyki systemu są obecnie niedostępne. Odpowiadaj ogólnie.\n';
+
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -79,7 +153,7 @@ WAŻNE: Jeśli pytanie NIE dotyczy komputerów/IT, odpowiedz: "Przepraszam, ale 
         body: JSON.stringify({
           model: 'llama-3.3-70b-versatile',
           messages: [
-            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'system', content: SYSTEM_PROMPT + systemContext },
             ...messages.filter(m => m.role !== 'system'),
             userMessage
           ],
